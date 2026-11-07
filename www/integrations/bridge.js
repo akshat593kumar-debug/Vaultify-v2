@@ -2,18 +2,35 @@
   const API = window.VAULTIFY_CONFIG?.apiBase || '';
   async function api(path, opts = {}) {
     const res = await fetch(API + path, { ...opts, headers: { 'Content-Type': 'application/json' } });
+    if (!res.ok) throw new Error("HTTP Error " + res.status);
     return res.json();
   }
+
   async function loadRealSongs() {
     try {
-      const { songs } = await api('/songs?limit=100');
-      if (songs?.length && window.S) {
+      if(window.toast) window.toast("Connecting to Vercel...");
+      const res = await api('/songs?limit=100');
+      
+      if (res.error) throw new Error(res.error);
+      
+      if (res.songs?.length && window.S) {
         window.S.length = 0;
-        songs.forEach((s, i) => window.S.push({ id: i+1, t: s.title, a: s.artist, cat: 'Vaultify', src: 'tg', c: ['#7c5cff','#00d4ff'], d: s.duration || 180, bpm: 100, _fileId: s.file_id, _backendId: s.id }));
+        res.songs.forEach((s, i) => window.S.push({ 
+          id: i+1, t: s.title, a: s.artist, cat: 'Vaultify', src: 'tg', 
+          c: ['#7c5cff','#00d4ff'], d: s.duration || 180, bpm: 100, 
+          _fileId: s.file_id, _backendId: s.id 
+        }));
         if (window.go) window.go('home');
+        if(window.toast) window.toast("✅ " + res.songs.length + " songs loaded!");
+      } else {
+        if(window.toast) window.toast("❌ 0 songs returned from backend");
       }
-    } catch (e) {}
+    } catch (e) {
+      console.error(e);
+      if(window.toast) window.toast("❌ Error: " + e.message);
+    }
   }
+
   let TRENDING_IDS = [];
   async function loadTrending() {
     try {
@@ -25,6 +42,7 @@
       if (window.go && window.U.tab === 'home') window.go('home');
     } catch (e) {}
   }
+
   let audioEl = null, audioCtx = null, sourceNode = null, filters = [];
   const freqs = [60, 230, 910, 3600, 14000];
   function setupAudioGraph() {
@@ -42,6 +60,7 @@
     });
     lastNode.connect(audioCtx.destination);
   }
+
   const _startCur = window.startCur;
   window.startCur = function() {
     if (_startCur) _startCur();
@@ -57,11 +76,13 @@
       if (window.U?.playing) { audioCtx.resume(); audioEl.play().catch(()=>{}); }
     }
   };
+
   const _toggle = window.toggle;
   window.toggle = function() {
     if (_toggle) _toggle();
     if (audioEl) { if (window.U?.playing) { audioCtx.resume(); audioEl.play().catch(()=>{}); } else audioEl.pause(); }
   };
+
   const _rHome_orig = window.rHome;
   window.rHome = function() {
       _rHome_orig();
@@ -75,7 +96,9 @@
           }
       }
   };
-  setTimeout(async () => { await loadRealSongs(); await loadTrending(); }, 500);
+
+  setTimeout(async () => { await loadRealSongs(); await loadTrending(); }, 1000);
+
   document.addEventListener('click', function(e) {
       const plRow = e.target.closest('[data-pl]');
       if (plRow && !e.target.closest('[data-plplay]')) {
@@ -93,6 +116,7 @@
           if(window.closeSheet) window.closeSheet(); return;
       }
   }, true);
+
   function openEQSheet() {
       if(audioCtx) audioCtx.resume();
       let html = `<h2 style="margin:4px 0 8px">Equalizer</h2><div style="display:flex;justify-content:space-between;align-items:flex-end;height:180px;padding:20px 10px;background:var(--glass);border-radius:20px;margin-bottom:15px;">`;
@@ -101,12 +125,14 @@
       if(window.sheet) window.sheet(html);
       setTimeout(() => { document.querySelectorAll('.eq-slider').forEach(slider => { slider.addEventListener('input', e => { let idx = parseInt(e.target.dataset.index); let val = parseFloat(e.target.value); if(filters[idx]) filters[idx].gain.value = val; localStorage.setItem('vaultify_eq_'+idx, val); }); }); }, 100);
   }
+
   window.applyEQPreset = function(preset) {
       const presets = { flat: [0, 0, 0, 0, 0], bass: [8, 5, 0, -1, -2], vocal: [-2, 2, 6, 4, 1], rock: [5, 2, -1, 3, 5] };
       if(!filters.length) return; filters.forEach((f, i) => { f.gain.value = presets[preset][i]; localStorage.setItem('vaultify_eq_'+i, presets[preset][i]); });
       document.querySelectorAll('.eq-slider').forEach(s => { s.value = presets[preset][s.dataset.index]; });
       document.querySelectorAll('#sheet .chip').forEach(c => c.classList.remove('on')); if(event && event.target) event.target.classList.add('on');
   };
+
   const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
           if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
@@ -123,6 +149,7 @@
       });
   });
   observer.observe(document.getElementById('full'), { attributes: true });
+
   document.addEventListener('DOMContentLoaded', () => {
       if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
           const { App } = window.Capacitor.Plugins;
