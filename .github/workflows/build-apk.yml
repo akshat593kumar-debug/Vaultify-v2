@@ -20,19 +20,6 @@ jobs:
         run: |
           keytool -genkey -v -keystore android/app/vaultify-release.keystore -alias vaultify -keyalg RSA -keysize 2048 -validity 10000 -storepass vaultify123 -keypass vaultify123 -dname "CN=Vaultify, OU=App, O=Vaultify, L=Delhi, S=Delhi, C=IN"
 
-      - name: Setup Signing
-        run: |
-          sed -i '/buildTypes {/i \
-              signingConfigs {\
-                  release {\
-                      storeFile file("vaultify-release.keystore")\
-                      storePassword "vaultify123"\
-                      keyAlias "vaultify"\
-                      keyPassword "vaultify123"\
-                  }\
-              }' android/app/build.gradle
-          sed -i '/release {/a \            signingConfig signingConfigs.release' android/app/build.gradle
-
       - name: Build APK
         run: |
           cd android
