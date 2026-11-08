@@ -12,7 +12,7 @@ try {
       })
     });
   }
-} catch (e) { console.error("❌ Firebase Error:", e.message); }
+} catch (e) { console.error("Firebase Error:", e.message); }
 
 const db = admin.firestore();
 const BOTS = (process.env.TG_BOTS || '').split(',').filter(Boolean);
@@ -22,18 +22,13 @@ const app = express();
 const router = express.Router();
 
 router.use(express.json());
-router.use((req, res, next) => { 
-  res.header('Access-Control-Allow-Origin', '*'); 
-  res.header('Access-Control-Allow-Headers', '*'); 
-  next(); 
-});
+router.use((req, res, next) => { res.header('Access-Control-Allow-Origin', '*'); res.header('Access-Control-Allow-Headers', '*'); next(); });
 
 router.get('/songs', async (req, res) => {
   try {
     let allSongs = [];
     const chunksSnap = await db.collection('vaultify_shared').doc('library_main').collection('chunks').get();
-    if (chunksSnap.empty) return res.status(404).json({ error: "No chunks found" });
-
+    if (chunksSnap.empty) return res.status(404).json({ error: "No chunks" });
     let idx = 0;
     chunksSnap.forEach(doc => {
       const data = doc.data();
@@ -57,26 +52,18 @@ router.get('/songs', async (req, res) => {
       }
     });
     res.json({ count: allSongs.length, songs: allSongs });
-  } catch (e) { 
-    res.status(500).json({ error: "Firebase Error: " + e.message }); 
-  }
+  } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// DIRECT 302 REDIRECT (Bypasses Vercel and gives direct Telegram URL)
+// 302 Redirect for INSTANT play (Bypasses Vercel download)
 router.get('/audio', async (req, res) => {
   const fileId = req.query.file_id;
-  const audioUrl = req.query.url;
-
-  if (audioUrl) return res.redirect(audioUrl);
-  if (!fileId) return res.status(400).send('file_id missing');
-
-  // Rotate bots to avoid rate limits (5 bots = 5x faster)
+  if (req.query.url) return res.redirect(req.query.url);
+  if (!fileId) return res.status(400).send('No file_id');
   const token = BOTS[rrIndex++ % BOTS.length];
   try {
     const { data } = await axios.get(`https://api.telegram.org/bot${token}/getFile`, { params: { file_id: fileId } });
     if (!data.ok) throw new Error(data.description);
-    
-    // Redirect to Telegram Server directly
     res.redirect(`https://api.telegram.org/file/bot${token}/${data.result.file_path}`);
   } catch (e) { res.status(500).send(e.message); }
 });

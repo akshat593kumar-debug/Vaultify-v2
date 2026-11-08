@@ -15,10 +15,19 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 input,textarea{font:inherit;color:inherit;outline:none}
 svg{display:block}
 ::-webkit-scrollbar{display:none}
-body{display:grid;place-items:center}
-#app{position:relative;width:100%;height:100dvh;background:#000;overflow:hidden;isolation:isolate}
+body{display:grid;place-items:center;transition:background .5s,color .5s}
+#app{position:relative;width:100%;height:100dvh;background:#000;overflow:hidden;isolation:isolate;transition:background .5s}
 @media(min-width:520px){#app{width:410px;height:860px;border-radius:54px;border:9px solid #151515;box-shadow:0 0 0 1px #333,0 40px 120px rgba(124,92,255,.25)}}
 
+/* SIMPLE UI (Black & White Fast Mode) */
+body.simple-ui{--glass:#0a0a0a;--glass2:#111;--line:#333;--tx:#fff;--mut:#aaa;--c1:#fff;--c2:#fff}
+body.simple-ui .glass{backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none;border:1px solid #222;background:#0a0a0a}
+body.simple-ui .bg{display:none}
+body.simple-ui #full, body.simple-ui #mini, body.simple-ui #nav{backdrop-filter:none;-webkit-backdrop-filter:none;background:#000}
+body.simple-ui .chip.on{background:#fff;color:#000}
+body.simple-ui .pbtn, body.simple-ui .ctl .play{background:#fff;color:#000}
+
+/* Advanced UI Animations */
 .bg{position:absolute;inset:0;z-index:-1;overflow:hidden;transition:background 1s}
 .bg i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.55;transition:background 1.2s;will-change:transform}
 .bg i:nth-child(1){width:380px;height:380px;left:-120px;top:-60px;background:var(--c1);animation:f1 14s ease-in-out infinite alternate}
@@ -28,12 +37,13 @@ body{display:grid;place-items:center}
 @keyframes f1{to{transform:translate(60px,80px) scale(1.15)}}
 @keyframes f2{to{transform:translate(-70px,-60px) scale(1.2)}}
 
-.glass{background:var(--glass);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid var(--line);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 10px 36px rgba(0,0,0,.3)}
+.glass{background:var(--glass);backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);border:1px solid var(--line);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 10px 36px rgba(0,0,0,.3);transition:all .3s}
 
 #notch{position:absolute;top:10px;left:50%;width:126px;height:36px;margin-left:-63px;z-index:200;transform:scale(var(--beat,1));transition:transform .08s linear}
 #notch::before,#notch::after{content:"";position:absolute;inset:-3px;border-radius:24px;background:conic-gradient(from var(--a),var(--c1),var(--c2),#fff,var(--c2),var(--c1));animation:spin 2.6s linear infinite;opacity:0;transition:opacity .5s}
 #notch::after{filter:blur(12px);inset:-6px}
 #notch.on::before{opacity:1}#notch.on::after{opacity:.75}
+body.simple-ui #notch::before, body.simple-ui #notch::after{display:none}
 #notch .nin{position:relative;z-index:1;height:100%;background:#000;border-radius:20px;display:flex;align-items:center;justify-content:space-between;padding:0 12px}
 #notch .nin b{width:9px;height:9px;border-radius:50%;background:#0a0a14;border:1px solid #222}
 #notch .eq{display:flex;gap:2px;align-items:flex-end;height:12px;opacity:0;transition:.3s}
@@ -50,6 +60,7 @@ h1{font-size:30px;font-weight:700;letter-spacing:-.6px}
 h2{font-size:19px;font-weight:600;letter-spacing:-.3px;margin:22px 0 10px;display:flex;justify-content:space-between;align-items:center}
 h2 small{font-size:13px;color:var(--mut);font-weight:500}
 .logo{font-family:Pacifico,cursive;font-size:28px;background:linear-gradient(90deg,#fff,var(--c2));-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:400}
+body.simple-ui .logo{background:none;color:#fff;-webkit-text-fill-color:#fff}
 .sub{color:var(--mut);font-size:14px;margin-top:2px}
 .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
 .ibtn{width:38px;height:38px;border-radius:50%;display:grid;place-items:center}
@@ -83,19 +94,18 @@ h2 small{font-size:13px;color:var(--mut);font-weight:500}
 .tog{width:46px;height:28px;border-radius:15px;background:rgba(255,255,255,.18);position:relative;transition:.25s;flex:none}
 .tog::after{content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:.25s;box-shadow:0 2px 6px rgba(0,0,0,.4)}
 .tog.on{background:#34c759}.tog.on::after{left:21px}
+body.simple-ui .tog{background:#333} body.simple-ui .tog.on{background:#fff}
 
 .sbox{display:flex;align-items:center;gap:10px;padding:0 16px;height:48px;border-radius:24px;margin:14px 0 12px}
 .sbox input{flex:1;background:none;border:0;font-size:16px}
 .sbox input::placeholder{color:var(--mut)}
 .meter{font-size:12px;color:var(--mut);margin:12px 4px 8px;display:flex;justify-content:space-between}
-.skel{height:68px;border-radius:18px;margin-bottom:6px;background:linear-gradient(90deg,rgba(255,255,255,.04),rgba(255,255,255,.1),rgba(255,255,255,.04));background-size:200% 100%;animation:sh 1s infinite}
-@keyframes sh{to{background-position:-200% 0}}
-.empty{text-align:center;color:var(--mut);padding:50px 20px;font-size:14px}
 
 .btn{height:48px;padding:0 22px;border-radius:24px;background:#fff;color:#000;font-weight:600;font-size:15px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
 .btn.g{background:var(--glass2);color:#fff;border:1px solid var(--line);backdrop-filter:blur(20px)}
+body.simple-ui .btn.g{background:#222}
 .btn.w{width:100%}
-.field{width:100%;height:48px;border-radius:16px;padding:0 16px;background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(20px);font-size:15px}
+.field{width:100%;height:48px;border-radius:16px;padding:0 16px;background:var(--glass);border:1px solid var(--line);font-size:15px}
 .field::placeholder{color:var(--mut)}
 .box{padding:18px;border-radius:26px}
 .mem{display:flex;gap:10px;overflow-x:auto;margin:0 -4px;padding:4px}
@@ -120,9 +130,6 @@ h2 small{font-size:13px;color:var(--mut);font-weight:500}
 .cert .clk{font-variant-numeric:tabular-nums;font-size:22px;font-weight:700;letter-spacing:1px}
 .stat{display:flex;justify-content:space-between;font-size:13.5px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.08)}
 .stat:last-child{border:0}
-.bar{height:7px;border-radius:5px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:6px}
-.bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--c1),var(--c2));transition:width .6s}
-.dot{width:8px;height:8px;border-radius:50%;background:#34c759;box-shadow:0 0 8px #34c759;display:inline-block;margin-right:6px}
 
 .pf{text-align:center;padding-top:6px}
 .pf .av{width:96px;height:96px;font-size:36px;margin:0 auto 10px;position:relative;border-width:2px}
@@ -136,7 +143,6 @@ h2 small{font-size:13px;color:var(--mut);font-weight:500}
 #nav{position:absolute;left:14px;right:14px;bottom:16px;height:64px;border-radius:32px;display:flex;justify-content:space-around;align-items:center;z-index:50;background:rgba(255,255,255,.07)}
 #nav button{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--mut);width:60px;transition:.2s}
 #nav button.on{color:#fff}
-#nav button.on svg{filter:drop-shadow(0 0 6px var(--c2))}
 
 #mini{position:absolute;left:14px;right:14px;bottom:90px;height:62px;border-radius:24px;z-index:49;display:none;align-items:center;gap:11px;padding:0 10px 0 8px;overflow:hidden;background:rgba(255,255,255,.07)}
 #mini.show{display:flex}
@@ -179,31 +185,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;heigh
 .toast{position:absolute;top:64px;left:50%;transform:translate(-50%,-20px);z-index:300;padding:10px 18px;border-radius:20px;font-size:13.5px;font-weight:500;opacity:0;transition:.35s;pointer-events:none;white-space:nowrap;background:rgba(255,255,255,.12)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
-.pinned-hdr{display:flex;align-items:center;gap:8px;margin:14px 0 8px}
-.pinned-hdr .ttl{font-size:19px;font-weight:600;letter-spacing:-.3px;flex:1;display:flex;align-items:center;gap:8px}
-.pin-badge{font-size:9.5px;padding:2px 7px;border-radius:6px;background:linear-gradient(90deg,var(--c1),var(--c2));font-weight:700;letter-spacing:.5px;color:#fff}
-.pin-toggle{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:var(--mut)}
-.pin-toggle.on{color:var(--c2)}
-.pin-note{font-size:12px;color:var(--mut);margin:6px 4px 4px;line-height:1.45}
 .cache-bar{height:8px;border-radius:5px;background:rgba(255,255,255,.08);overflow:hidden;margin:8px 0}
-.cache-bar i{display:block;height:100%;background:linear-gradient(90deg,#34c759,var(--c2));transition:width .4s;border-radius:5px}
-.cache-slider{-webkit-appearance:none;width:100%;height:4px;border-radius:3px;background:rgba(255,255,255,.15);margin:8px 0 2px}
-.cache-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.4);cursor:pointer}
-.cached-badge{font-style:normal;font-size:9px;padding:1px 5px;border-radius:4px;background:#34c759;color:#fff;font-weight:700;letter-spacing:.3px;vertical-align:middle;margin-left:3px}
-.dl-badge{font-style:normal;font-size:9px;padding:1px 5px;border-radius:4px;background:var(--c2);color:#000;font-weight:700;letter-spacing:.3px;vertical-align:middle;margin-left:3px;animation:pulse 1.4s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:.55}50%{opacity:1}}
-.import-area{width:100%;min-height:90px;padding:12px;border-radius:16px;background:var(--glass);border:1px solid var(--line);font-size:14px;resize:vertical;font-family:var(--font);color:#fff;line-height:1.5}
-.import-area::placeholder{color:var(--mut)}
-.match-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:14px;margin-bottom:6px;font-size:13px;background:var(--glass);border:1px solid var(--line)}
-.match-item .ok{color:#34c759;font-weight:700;font-size:15px}
-.match-item .miss{color:#ff6b6b;font-weight:700;font-size:15px}
-.prog-ring{width:22px;height:22px;border-radius:50%;border:2px solid rgba(255,255,255,.15);border-top-color:var(--c2);animation:spinr 1s linear infinite;display:inline-block;vertical-align:middle}
-@keyframes spinr{to{transform:rotate(360deg)}}
-.cache-tag{font-size:9.5px;padding:1px 5px;border-radius:4px;background:rgba(52,199,89,.22);color:#34c759;font-weight:700;margin-left:4px}
+.cache-bar i{display:block;height:100%;background:#fff;transition:width .4s;border-radius:5px}
+.fps-counter{position:absolute;top:16px;left:16px;z-index:500;background:rgba(0,0,0,.8);color:#0f0;font-family:monospace;font-size:12px;padding:4px 8px;border-radius:6px;display:none;border:1px solid #0f0}
 </style>
 </head>
-<body>
+<body class="simple-ui">
 <div id="app">
+  <div class="fps-counter" id="fps">FPS: 60</div>
   <div class="bg"><i></i><i></i><i></i></div>
   <div id="notch"><div class="nin"><b></b><div class="eq"><s></s><s></s><s></s><s></s></div></div></div>
   <div class="toast glass" id="toast"></div>
@@ -250,12 +239,6 @@ ig:'<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="
 out:'<path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>',
 list:'<path d="M4 6h12M4 12h12M4 18h8M19 15v6M16 18h6"/>',
 clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'};
-Object.assign(P,{
-  imp:'<path d="M12 3v12M8 11l4 4 4-4"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/>',
-  pin:'<path d="M12 2v9M9 11h6l-1 4h-4z"/><path d="M12 15v7"/>',
-  cache:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h10M7 14h6"/>',
-  bolt:'<path d="M13 2L4 14h7l-1 8 9-12h-7z" fill="currentColor"/>'
-});
 const ic=(n,s=22,sw=1.8,fill='none')=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="${fill}" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${P[n]}</svg>`;
 
 /* ---------- data ---------- */
@@ -283,7 +266,7 @@ const SRC={tg:'Vaultify',jio:'JioSaavn'};
 
 /* ---------- state ---------- */
 const D={q:[],qi:-1,hist:[],liked:[],pls:[{id:1,name:'My Vibes',ids:[1,5,9]}],auto:true,
- prof:{name:'vault_user',bio:'Music is my second language',pic:''},since:Date.now()};
+ prof:{name:'vault_user',bio:'Music is my second language',pic:''},since:Date.now(),simpleUI:true,showFps:false};
 try{Object.assign(D,JSON.parse(localStorage.getItem('vaultify')||'{}'))}catch(e){}
 const save=()=>{try{localStorage.setItem('vaultify',JSON.stringify(D))}catch(e){}};
 const U={tab:'home',cat:'All',pt:'Liked',playing:false,T:0,shuf:false,rep:false,full:false,fpTab:'now',aiNext:null,aiWhy:'',room:null,srcF:'All',query:''};
@@ -291,6 +274,24 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=t=>{t=Math.max(0,Math.floor(t));return Math.floor(t/60)+':'+String(t%60).padStart(2,'0')};
 const cur=()=>byId(D.q[D.qi]);
+
+// Apply UI settings on load
+if(D.simpleUI) document.body.classList.add('simple-ui'); else document.body.classList.remove('simple-ui');
+if(D.showFps) { $('#fps').style.display = 'block'; } else { $('#fps').style.display = 'none'; }
+
+// FPS Loop
+let lastFrame = performance.now();
+function updateFps() {
+    if(D.showFps) {
+        const now = performance.now();
+        const fps = Math.round(1000 / (now - lastFrame));
+        lastFrame = now;
+        const el = $('#fps');
+        if(el) el.textContent = 'FPS: ' + fps;
+    }
+    requestAnimationFrame(updateFps);
+}
+requestAnimationFrame(updateFps);
 
 const artCache={};
 function art(s){return artCache[s.id]||(artCache[s.id]=`url('data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${s.c[0]}"/><stop offset="1" stop-color="${s.c[1]}"/></linearGradient></defs><rect width="100" height="100" fill="url(#g)"/><circle cx="${20+s.id*4%60}" cy="${70-s.id*3%40}" r="${26+s.id%3*6}" fill="#fff" opacity=".16"/><circle cx="${80-s.id*5%50}" cy="${25+s.id*4%40}" r="18" fill="#000" opacity=".18"/><path d="M0 ${60+s.id%4*6} Q 30 ${40+s.id%5*5} 55 ${62} T 100 ${55}" stroke="#fff" stroke-width="2" fill="none" opacity=".35"/></svg>`)}`)}
@@ -313,11 +314,8 @@ function aiPick(){
   return best.id;
 }
 
-function setTheme(s){const r=document.documentElement.style;r.setProperty('--c1',s.c[0]);r.setProperty('--c2',s.c[1])}
-function playIds(ids,i=0,sync=true){
-  D.q=ids.slice();D.qi=i;startCur();
-  if(sync&&U.room)bc({type:'play',id:D.q[D.qi]});
-}
+function setTheme(s){const r=document.documentElement.style;if(!D.simpleUI){r.setProperty('--c1',s.c[0]);r.setProperty('--c2',s.c[1])}else{r.setProperty('--c1','#fff');r.setProperty('--c2','#fff')}}
+function playIds(ids,i=0,sync=true){D.q=ids.slice();D.qi=i;startCur();if(sync&&U.room)bc({type:'play',id:D.q[D.qi]})}
 function startCur(){
   const s=cur();if(!s)return;U.T=0;U.playing=true;setTheme(s);
   D.hist=D.hist.filter(h=>h.id!==s.id);D.hist.unshift({id:s.id,at:Date.now()});D.hist=D.hist.slice(0,50);
@@ -340,13 +338,9 @@ function tick(){const s=cur();if(!s)return;const p=U.T/s.d*100;
   const r=$('#seek');if(r&&!r.dragging){r.value=U.T;r.style.setProperty('--p',p+'%')}
   const a=$('#tcur');if(a)a.textContent=fmt(U.T);const b=$('#trem');if(b)b.textContent='-'+fmt(s.d-U.T)}
 (function loop(){const s=cur(),n=$('#notch');
-  if(s&&U.playing){const ms=60000/s.bpm,ph=(performance.now()%ms)/ms;n.style.setProperty('--beat',(1+.075*Math.pow(1-ph,3)).toFixed(3))}
+  if(s&&U.playing&&!D.simpleUI){const ms=60000/s.bpm,ph=(performance.now()%ms)/ms;n.style.setProperty('--beat',(1+.075*Math.pow(1-ph,3)).toFixed(3))}
   else n.style.setProperty('--beat',1);
   requestAnimationFrame(loop)})();
-function media(){const s=cur();if(!s||!('mediaSession' in navigator))return;
-  try{navigator.mediaSession.metadata=new MediaMetadata({title:s.t,artist:s.a,album:'Vaultify'});
-  navigator.mediaSession.setActionHandler('play',toggle);navigator.mediaSession.setActionHandler('pause',toggle);
-  navigator.mediaSession.setActionHandler('nexttrack',next);navigator.mediaSession.setActionHandler('previoustrack',prev)}catch(e){}}
 
 function addQueue(id){if(!D.q.length){playIds([id]);return}D.q.push(id);save();toast('Added to queue');paint()}
 function playNext(id){if(!D.q.length){playIds([id]);return}D.q.splice(D.qi+1,0,id);save();toast('Will play next');paint()}
@@ -455,9 +449,6 @@ function rCert(){
   <div class="box glass">
    <div class="stat"><span>Thumbnail URLs renew in</span><b id="rn">--:--</b></div>
    <div class="stat"><span>Full server fetch</span><b>Every 15 min</b></div>
-   <div style="margin:10px 0 4px;font-size:13.5px;display:flex;justify-content:space-between"><span>Traffic controller</span><b id="rps">0 req/s</b></div>
-   <div class="bar"><i id="rpb" style="width:30%"></i></div>
-   <div class="stat" style="margin-top:8px"><span>Request queue / limit</span><b id="rq">0 / 150</b></div>
    <div class="stat"><span>Cache hit rate</span><b id="ch">96%</b></div>
    <div class="stat"><span>Avg load time</span><b id="lt">0.8s</b></div></div>
   <h2>Vaultify bots <small>5 of 5 online</small></h2>
@@ -469,10 +460,15 @@ function rProfile(){
   let body='';
   if(U.pt==='Playlists')body=D.pls.map(pl=>`<div class="row glass" style="margin-bottom:8px" data-pl="${pl.id}"><div class="art" ${pl.ids[0]?A(byId(pl.ids[0])):''} style="background-color:#222;${pl.ids[0]?'background-image:'+art(byId(pl.ids[0])):''}"></div><div class="m"><b>${esc(pl.name)}</b><span>${pl.ids.length} songs</span></div><button class="dots" data-plplay="${pl.id}">${ic('play',18)}</button></div>`).join('')||'<div class="empty">No playlists yet</div>';
   else body=ids[U.pt].length?list(ids[U.pt]):`<div class="empty">Nothing here yet</div>`;
+  
   $('#s-profile').innerHTML=`<div class="pf"><div class="av glass" style="${p.pic?`background-image:url('${p.pic}')`:''}">${p.pic?'':esc((p.name[0]||'V').toUpperCase())}<label class="cam">${ic('cam',16)}<input type="file" accept="image/*" id="pic" hidden></label></div>
   <input class="field" id="pn" value="${esc(p.name)}" maxlength="20" style="text-align:center;font-weight:600;font-size:18px">
   <input class="field" id="pb" value="${esc(p.bio)}" maxlength="60" style="text-align:center;margin-top:8px;font-size:14px;color:var(--mut)"></div>
   <div class="stats glass"><div><b>${D.liked.length}</b><span>Liked</span></div><div><b>${D.hist.length}</b><span>Played</span></div><div><b>${D.pls.length}</b><span>Playlists</span></div></div>
+  
+  <div class="sw glass"><span>Simple UI (Fast Mode)<br><small style="color:var(--mut)">Turns off glassy effects</small></span><div class="tog ${D.simpleUI?'on':''}" data-simple="1"></div></div>
+  <div class="sw glass" style="margin-top:6px"><span>Show FPS Counter<br><small style="color:var(--mut)">Displays frame rate on screen</small></span><div class="tog ${D.showFps?'on':''}" data-fps="1"></div></div>
+
   <div class="seg glass">${['Liked','Playlists','History','Queue'].map(t=>`<button class="${U.pt===t?'on':''}" data-pt="${t}">${t}</button>`).join('')}</div>${body}`;
   $('#pn').onchange=e=>{D.prof.name=e.target.value.trim()||'vault_user';save();rNav();toast('Username saved')};
   $('#pb').onchange=e=>{D.prof.bio=e.target.value;save();toast('Bio saved')};
@@ -491,7 +487,7 @@ function rFull(){const s=cur(),f=$('#full');if(!s)return;f.classList.toggle('pau
   <div class="ctl"><button class="${U.shuf?'on':''}" data-a="sf">${ic('shuf',22)}</button><button data-a="pv">${ic('prev',32)}</button>
   <button class="play" data-a="tg">${ic(U.playing?'pause':'play',34)}</button><button data-a="nx">${ic('next',32)}</button><button class="${U.rep?'on':''}" data-a="rp">${ic('rep',22)}</button></div>`
   :`<div class="fpq"><div class="sub" style="margin:14px 4px 6px">Playing from queue</div>${D.q.map((id,i)=>`<div class="row ${i===D.qi?'now':''}" data-qi="${i}"><div class="art" ${A(byId(id))}></div><div class="m"><b>${esc(byId(id).t)}</b><span>${esc(byId(id).a)}</span></div><button class="dots" data-menu="${id}">${ic('dots',20)}</button></div>`).join('')}
-  <div class="row glass" style="margin-top:8px"><div class="ai" style="padding:0;background:none;border:0;box-shadow:none;backdrop-filter:none"></div><div class="m"><span>${ic('spark',12)} AI will add next:</span><b>${esc(byId(U.aiNext||aiPick()).t)}</b></div></div></div>`}
+  </div>`}
   <div class="fpbot"><button class="glass" data-a="ft">${ic(U.fpTab==='now'?'queue':'play',18)}${U.fpTab==='now'?'Queue':'Player'}</button><button class="glass" data-a="pl2">${ic('list',18)}Playlist</button><button class="glass" data-a="sh2">${ic('share',18)}Share</button></div>`;
   const r=$('#seek');if(r){r.style.setProperty('--p',U.T/s.d*100+'%');
     r.addEventListener('input',e=>{r.dragging=true;U.T=+e.target.value;r.style.setProperty('--p',U.T/s.d*100+'%');$('#tcur').textContent=fmt(U.T)});
@@ -523,7 +519,7 @@ function paint(){
   if(s)setTheme(s);
   const sc=$('#s-'+U.tab).scrollTop;
   if(!(U.tab==='search'&&document.activeElement&&document.activeElement.id==='q')&&!(U.tab==='team'&&document.activeElement&&document.activeElement.id==='cm'))RS[U.tab]();
-  $('#s-'+U.tab).scrollTop=sc;rMini();if(U.full)rFull();media();
+  $('#s-'+U.tab).scrollTop=sc;rMini();if(U.full)rFull();
 }
 
 const bcn='BroadcastChannel' in window?new BroadcastChannel('vaultify-room'):null;
@@ -549,346 +545,15 @@ function sendChat(){const i=$('#cm'),t=i.value.trim();if(!t||!U.room)return;
 function clock(){const e=$('#clk');if(e)e.innerHTML=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})+'<br>'+new Date().toLocaleTimeString('en-IN',{hour12:true})}
 let q=0;
 function sys(){if(!$('#rps'))return;
-  const left=900-Math.floor(Date.now()/1000)%900;$('#rn').textContent=fmt(left);
   const raw=Math.round(60+Math.random()*110),rps=Math.min(raw,150);q=Math.max(0,raw-150)+Math.floor(Math.random()*3);
-  $('#rps').textContent=rps+' req/s';$('#rpb').style.width=rps/150*100+'%';$('#rq').textContent=q+' / 150';
   $('#ch').textContent=(94+Math.random()*5).toFixed(1)+'%';$('#lt').textContent=(0.6+Math.random()*0.9).toFixed(1)+'s';
   for(let i=1;i<=5;i++){const b=$('#bt'+i);if(b)b.textContent=(120+i*37+Math.floor(Date.now()/9000)%40)+' MP3'}}
 setInterval(()=>{clock();sys()},1000);
 
-/* ============================================================
-   VAULTIFY V2 UPGRADES - Cache engine (min 5MB chunk rule)
-   ============================================================ */
-
-const CACHE = {
-  data: { maxMB: 500, usedMB: 0, items: {} },
-  DEFAULT_MB: 500,
-  HARD_MAX_MB: 5120,
-  MIN_FIRST_CHUNK_MB: 5
-};
-try {
-  const stored = JSON.parse(localStorage.getItem('vaultify_cache') || 'null');
-  if (stored && typeof stored === 'object') {
-    CACHE.data = Object.assign(CACHE.data, stored);
-    if (!CACHE.data.items) CACHE.data.items = {};
-  }
-} catch (e) {}
-const saveCache = () => { try { localStorage.setItem('vaultify_cache', JSON.stringify(CACHE.data)); } catch (e) {} };
-
-function cacheSize(id) {
-  const s = byId(id);
-  return s ? Math.max(1, Math.round(s.d * 2 / 60)) : 2;
-}
-function isCached(id) { const it = CACHE.data.items[id]; return !!it && it.status === 'cached'; }
-function isDownloading(id) { const it = CACHE.data.items[id]; return !!it && it.status === 'downloading'; }
-
-function firstChunkMB(sizeMB) {
-  if (sizeMB <= CACHE.MIN_FIRST_CHUNK_MB) return sizeMB;
-  return Math.min(sizeMB, Math.max(CACHE.MIN_FIRST_CHUNK_MB, sizeMB * 0.5));
-}
-
-function startCache(id) {
-  if (!byId(id) || isCached(id)) return;
-  const item = CACHE.data.items[id] || { progress: 0, status: 'downloading', sizeMB: cacheSize(id) };
-  item.status = 'downloading';
-  item.progress = item.progress || 0;
-  item.lastPlayed = Date.now();
-  CACHE.data.items[id] = item;
-  saveCache();
-  simulateDownload(id);
-  scheduleBadgeRefresh();
-}
-
-function simulateDownload(id) {
-  const it = CACHE.data.items[id];
-  if (!it) return;
-  const sizeMB = it.sizeMB;
-  const firstMB = firstChunkMB(sizeMB);
-  const firstPct = Math.min(100, (firstMB / sizeMB) * 100);
-  const step = () => {
-    const c = CACHE.data.items[id];
-    if (!c || c.status !== 'downloading') return;
-    if (c.progress < firstPct - 0.5) {
-      const chunkPct = Math.min(10, firstPct - c.progress);
-      c.progress += chunkPct;
-      CACHE.data.usedMB += c.sizeMB * chunkPct / 100;
-      saveCache();
-      scheduleBadgeRefresh();
-      setTimeout(step, 260);
-    } else {
-      c.progress = firstPct;
-      saveCache();
-      if (firstPct >= 100) {
-        c.status = 'cached';
-        c.progress = 100;
-        enforceCacheLimit();
-        saveCache();
-        scheduleBadgeRefresh();
-      } else {
-        waitForPlayback(id);
-      }
-    }
-  };
-  setTimeout(step, 220);
-}
-
-function waitForPlayback(id) {
-  const check = setInterval(() => {
-    const it = CACHE.data.items[id];
-    if (!it || it.status !== 'downloading') { clearInterval(check); return; }
-    const s = cur();
-    if (s && s.id === id && U.T > s.d * 0.3) { clearInterval(check); finishDownload(id); }
-  }, 900);
-  setTimeout(() => { clearInterval(check); finishDownload(id); }, 30000);
-}
-
-function finishDownload(id) {
-  const it = CACHE.data.items[id];
-  if (!it || it.status !== 'downloading') return;
-  const remaining = it.sizeMB * (100 - it.progress) / 100;
-  it.progress = 100;
-  it.status = 'cached';
-  it.lastPlayed = Date.now();
-  CACHE.data.usedMB += remaining;
-  enforceCacheLimit();
-  saveCache();
-  scheduleBadgeRefresh();
-}
-
-function enforceCacheLimit() {
-  const max = CACHE.data.maxMB;
-  if (CACHE.data.usedMB <= max) return;
-  const sorted = Object.entries(CACHE.data.items)
-    .filter(([, v]) => v.status === 'cached')
-    .sort((a, b) => (a[1].lastPlayed || 0) - (b[1].lastPlayed || 0));
-  for (const [id, it] of sorted) {
-    if (CACHE.data.usedMB <= max) break;
-    CACHE.data.usedMB -= it.sizeMB;
-    delete CACHE.data.items[id];
-  }
-  if (CACHE.data.usedMB > max) {
-    Object.keys(CACHE.data.items).forEach(id => {
-      if (CACHE.data.usedMB <= max) return;
-      const it = CACHE.data.items[id];
-      CACHE.data.usedMB -= it.sizeMB * (it.progress || 0) / 100;
-      delete CACHE.data.items[id];
-    });
-  }
-  CACHE.data.usedMB = Math.max(0, CACHE.data.usedMB);
-}
-
-function clearCacheAll() {
-  CACHE.data = { maxMB: CACHE.data.maxMB, usedMB: 0, items: {} };
-  saveCache();
-  toast('Cache cleared');
-  scheduleBadgeRefresh();
-}
-
-const _startCur_orig = startCur;
-startCur = function () {
-  _startCur_orig();
-  const s = cur();
-  if (!s) return;
-  if (CACHE.data.items[s.id]) {
-    CACHE.data.items[s.id].lastPlayed = Date.now();
-  } else {
-    startCache(s.id);
-  }
-};
-
-let badgeTimer = null;
-function scheduleBadgeRefresh() {
-  if (badgeTimer) return;
-  badgeTimer = setTimeout(() => { badgeTimer = null; refreshCacheBadges(); }, 80);
-}
-function refreshCacheBadges() {
-  document.querySelectorAll('[data-play]').forEach(el => {
-    const id = +el.dataset.play;
-    const target = el.querySelector('.m b') || el.querySelector('p');
-    if (!target) return;
-    const old = target.querySelector('.cached-badge, .dl-badge');
-    if (old) old.remove();
-    if (isCached(id)) target.insertAdjacentHTML('beforeend', ' <i class="cached-badge">CACHED</i>');
-    else if (isDownloading(id)) target.insertAdjacentHTML('beforeend', ' <i class="dl-badge">↓</i>');
-  });
-}
-
-D.pinnedPl = D.pinnedPl || (D.pls[0] && D.pls[0].id);
-function pinnedHTML() {
-  const pl = D.pls.find(p => p.id === D.pinnedPl) || D.pls[0];
-  const header = `
-    <div class="pinned-hdr">
-      <div class="ttl">
-        <button class="pin-toggle on" data-pin-unset="1" title="Unpin">${ic('pin',16)}</button>
-        ${pl ? esc(pl.name) : 'Pinned playlist'}
-        <span class="pin-badge">PINNED</span>
-      </div>
-      <button class="ibtn glass" data-import-pl="1" style="width:34px;height:34px" title="Import playlist">${ic('imp',18)}</button>
-      ${pl ? `<button class="ibtn glass" data-plplay="${pl.id}" style="width:34px;height:34px" title="Play all">${ic('play',16)}</button>` : ''}
-    </div>`;
-  if (!pl || !pl.ids.length) {
-    return `<div class="pinned-wrap">${header}<div class="empty glass" style="border-radius:18px;padding:16px;font-size:13px">No songs. Import a playlist to fill this up.</div></div>`;
-  }
-  return `<div class="pinned-wrap">${header}
-    <div class="hrow">
-      ${pl.ids.slice(0, 8).map(id => { const s = byId(id); if (!s) return '';
-        return `<div class="card" data-play="${s.id}" data-ids="${pl.ids.join(',')}"><div class="art" ${A(s)}></div><p>${esc(s.t)}</p><span>${esc(s.a)}</span></div>`;
-      }).join('')}
-    </div></div>`;
-}
-function injectHomePinned() {
-  const screen = document.getElementById('s-home');
-  if (!screen) return;
-  const top = screen.querySelector('.top');
-  if (!top) return;
-  const old = screen.querySelector('.pinned-wrap');
-  if (old) old.remove();
-  const wrap = document.createElement('div');
-  wrap.innerHTML = pinnedHTML();
-  const el = wrap.firstElementChild;
-  top.insertAdjacentElement('afterend', el);
-  refreshCacheBadges();
-}
-
-function cacheProfileHTML() {
-  const used = Math.round(CACHE.data.usedMB);
-  const max = CACHE.data.maxMB;
-  const pct = max ? Math.min(100, used / max * 100) : 0;
-  const cachedCount = Object.values(CACHE.data.items).filter(i => i.status === 'cached').length;
-  const dlCount = Object.values(CACHE.data.items).filter(i => i.status === 'downloading').length;
-  return `
-    <h2>Cache <small>${used} MB / ${max} MB</small></h2>
-    <div class="box glass">
-      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:2px">
-        <span>${cachedCount} songs · ${dlCount} downloading</span>
-        <span>${pct.toFixed(0)}% used</span>
-      </div>
-      <div class="cache-bar"><i style="width:${pct}%"></i></div>
-      <div class="sub" style="font-size:12px;margin-top:8px">Max cache size</div>
-      <input type="range" class="cache-slider" id="cacheMax" min="500" max="5120" step="100" value="${max}">
-      <div class="sub" style="font-size:12px;text-align:right">${max} MB (max 5 GB)</div>
-      <div style="display:flex;gap:8px;margin-top:10px">
-        <button class="btn g" style="flex:1;height:40px;font-size:13px" data-cache-clear="1">${ic('out',16)}Clear cache</button>
-        <button class="btn g" style="flex:1;height:40px;font-size:13px" data-cache-refresh="1">${ic('rep',16)}Refresh</button>
-      </div>
-      <p class="sub" style="font-size:11px;margin-top:10px;line-height:1.55">
-        <b>First chunk downloads instantly</b> — minimum 5MB always, or the whole file if it's smaller than 5MB (10MB file → 5MB first).
-        The rest downloads after you play ~30% of the song. Oldest songs are auto-removed when limit is hit.
-        Cached songs play with <b style="color:#34c759">zero network</b>.
-      </p>
-    </div>`;
-}
-function injectProfileCache() {
-  const screen = document.getElementById('s-profile');
-  if (!screen) return;
-  const old = screen.querySelector('.cache-panel-wrap');
-  if (old) old.remove();
-  const wrap = document.createElement('div');
-  wrap.className = 'cache-panel-wrap';
-  wrap.innerHTML = cacheProfileHTML();
-  screen.appendChild(wrap);
-  const sl = screen.querySelector('#cacheMax');
-  if (sl) {
-    sl.addEventListener('input', e => {
-      CACHE.data.maxMB = +e.target.value || CACHE.DEFAULT_MB;
-      saveCache();
-      enforceCacheLimit();
-      saveCache();
-      injectProfileCache();
-    });
-  }
-}
-
-function importSheet() {
-  sheet(`
-    <h2 style="margin:4px 0 8px">Import playlist</h2>
-    <p class="sub" style="margin-bottom:10px;font-size:13px;line-height:1.5">
-      Paste a <b>YouTube Music</b> or <b>Spotify</b> playlist link. Vaultify AI matches every song to our library — same title, same creator.
-    </p>
-    <textarea class="import-area" id="impLink" placeholder="https://music.youtube.com/playlist?list=..."></textarea>
-    <button class="btn w" style="margin-top:10px" data-imp-go="1">${ic('spark',18)}Match with AI</button>
-    <div id="impResults" style="margin-top:12px"></div>
-  `);
-}
-function runImport() {
-  const link = document.getElementById('impLink')?.value.trim();
-  if (!link) { toast('Paste a playlist link first'); return; }
-  const results = document.getElementById('impResults');
-  if (!results) return;
-  results.innerHTML = `<div class="sub" style="text-align:center;font-size:13px;padding:16px">
-    <div class="prog-ring" style="margin:0 auto 10px"></div>AI is matching songs in your library...</div>`;
-  setTimeout(() => {
-    const shuffled = [...S].sort(() => Math.random() - 0.5).slice(0, 5);
-    const sourceNames = ['Mi Amor', 'Kesariya', 'Blinding Lights', 'Raataan Lambiyan', 'Tum Hi Ho'];
-    const matchedIds = [];
-    const rows = sourceNames.map((name, i) => {
-      const match = shuffled[i];
-      const ok = match && Math.random() > 0.18;
-      if (ok && match) matchedIds.push(match.id);
-      return `<div class="match-item" style="justify-content:space-between">
-        <div style="flex:1;min-width:0">
-          <b style="font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${ok ? esc(match.t) : name}</b>
-          <span class="sub" style="font-size:11px">${ok ? esc(match.a) + ' · In library' : 'Not in library yet'}</span>
-        </div>
-        <span class="${ok ? 'ok' : 'miss'}">${ok ? '✓' : '✗'}</span>
-      </div>`;
-    }).join('');
-    results.innerHTML = `
-      <div class="sub" style="font-size:12px;margin:0 4px 8px">
-        AI matched <b style="color:#34c759">${matchedIds.length}/5</b> songs to your library
-      </div>
-      ${rows}
-      ${matchedIds.length ? `<button class="btn w" style="margin-top:10px" data-imp-add="${matchedIds.join(',')}">${ic('plus',18)}Add ${matchedIds.length} songs to pinned playlist</button>` : ''}
-    `;
-  }, 1700);
-}
-function addImportedSongs(ids) {
-  if (!ids.length) return;
-  const pl = D.pls.find(p => p.id === D.pinnedPl) || D.pls[0];
-  if (!pl) { D.pls.push({ id: Date.now(), name: 'Imported', ids: [] }); D.pinnedPl = D.pls[0].id; }
-  const target = D.pls.find(p => p.id === D.pinnedPl) || D.pls[0];
-  ids.forEach(id => { if (!target.ids.includes(id)) target.ids.push(id); });
-  D.pinnedPl = target.id;
-  save();
-  closeSheet();
-  toast(`Added ${ids.length} songs to ${target.name}`);
-  if (U.tab === 'home') injectHomePinned();
-  if (U.tab === 'profile') injectProfileCache();
-  paint();
-}
-
-const _rHome_orig = rHome;
-rHome = function () { _rHome_orig(); injectHomePinned(); };
-RS.home = rHome;
-
-const _rProfile_orig = rProfile;
-rProfile = function () { _rProfile_orig(); injectProfileCache(); };
-RS.profile = rProfile;
-
-const _paint_orig = paint;
-paint = function () { _paint_orig(); scheduleBadgeRefresh(); };
-
-document.addEventListener('click', e => {
-  const g = s => e.target.closest(s);
-  let x;
-  if (x = g('[data-import-pl]')) { importSheet(); return; }
-  if (x = g('[data-imp-go]')) { runImport(); return; }
-  if (x = g('[data-imp-add]')) { addImportedSongs(x.dataset.impAdd.split(',').map(Number)); return; }
-  if (x = g('[data-cache-clear]')) { clearCacheAll(); injectProfileCache(); return; }
-  if (x = g('[data-cache-refresh]')) { injectProfileCache(); toast('Cache stats refreshed'); return; }
-  if (x = g('[data-pin-unset]')) {
-    const nextPl = D.pls.find(p => p.id !== D.pinnedPl);
-    if (nextPl) { D.pinnedPl = nextPl.id; save(); injectHomePinned(); toast('Pinned: ' + nextPl.name); }
-    else toast('Need at least 2 playlists to switch pin');
-    return;
-  }
-});
-
-if (!D.pls.length) { D.pls.push({ id: Date.now(), name: 'My Vibes', ids: [1, 5, 9] }); }
-if (!D.pls.find(p => p.id === D.pinnedPl)) D.pinnedPl = D.pls[0].id;
-
 document.addEventListener('click',e=>{
   const g=s=>e.target.closest(s);let x;
+  if(x=g('[data-simple]')){D.simpleUI=!D.simpleUI;save();document.body.classList.toggle('simple-ui',D.simpleUI);rProfile();return}
+  if(x=g('[data-fps]')){D.showFps=!D.showFps;save();$('#fps').style.display=D.showFps?'block':'none';rProfile();return}
   if(x=g('[data-menu]')){menu(+x.dataset.menu);return}
   if(x=g('[data-a]')){const a=x.dataset.a,id=+x.dataset.id;
     switch(a){
