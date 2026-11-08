@@ -22,12 +22,14 @@
                 S.push({ 
                   id: i+1, t: s.title, a: s.artist, cat: 'Vaultify', src: 'tg', 
                   c: ['#7c5cff','#00d4ff'], d: s.duration || 180, bpm: 100, 
-                  _fileId: s.file_id, _backendId: s.id 
+                  _fileId: s.file_id, _audioUrl: s.audio_url, _backendId: s.id 
                 });
                 
-                // Image load karo agar backend se aa gayi hai
-                if (s.thumb_url && typeof artCache !== 'undefined') {
-                    artCache[i+1] = `url('${s.thumb_url}')`;
+                // Load Thumbnail
+                if (s.thumb_url) {
+                    if (typeof artCache !== 'undefined') artCache[i+1] = `url('${s.thumb_url}')`;
+                } else if (s.thumb_file_id) {
+                    if (typeof artCache !== 'undefined') artCache[i+1] = `url('${API}/thumb?file_id=${s.thumb_file_id}')`;
                 }
             });
             
@@ -41,18 +43,6 @@
       console.error(e);
       if(typeof toast !== 'undefined') toast("❌ " + e.message);
     }
-  }
-
-  let TRENDING_IDS = [];
-  async function loadTrending() {
-    try {
-      const res = await api('/trending');
-      TRENDING_IDS = (res.songs || []).map(bsId => {
-        const local = (typeof S !== 'undefined' ? S : []).find(s => s._backendId === bsId);
-        return local ? local.id : null;
-      }).filter(Boolean);
-      if (typeof go !== 'undefined' && typeof U !== 'undefined' && U.tab === 'home') go('home');
-    } catch (e) {}
   }
 
   let audioEl = null, audioCtx = null, sourceNode = null, filters = [];
@@ -98,7 +88,7 @@
 
     if (!audioEl) {
       audioEl = new Audio(); 
-      // CORS hata diya taaki audio block na ho
+      audioEl.crossOrigin = "anonymous"; // EQ ke liye zaroori hai
       audioEl.addEventListener('timeupdate', () => { 
           if (typeof U !== 'undefined') U.T = audioEl.currentTime; 
           if (typeof tick !== 'undefined') tick(); 
@@ -107,10 +97,14 @@
       setupAudioGraph();
     }
     
-    if (s._fileId) { 
-      audioEl.src = API + '/audio?file_id=' + encodeURIComponent(s._fileId); 
+    let srcUrl = null;
+    if (s._fileId) srcUrl = API + '/audio?file_id=' + encodeURIComponent(s._fileId);
+    else if (s._audioUrl) srcUrl = API + '/audio?url=' + encodeURIComponent(s._audioUrl);
+
+    if (srcUrl) { 
+      audioEl.src = srcUrl; 
       if (typeof U !== 'undefined' && U.playing) { 
-          if (audioCtx) audioCtx.resume(); 
+          if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); 
           audioEl.play().catch((err)=> { console.log("Play error:", err); }); 
       }
     }
@@ -121,7 +115,7 @@
     if (_toggle) _toggle();
     if (audioEl && typeof U !== 'undefined') { 
         if (U.playing) { 
-            if (audioCtx) audioCtx.resume(); 
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); 
             audioEl.play().catch(()=>{}); 
             if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "playing";
         } else { 
@@ -131,23 +125,9 @@
     }
   };
 
-  const _rHome_orig = window.rHome;
-  window.rHome = function() {
-      _rHome_orig();
-      if (TRENDING_IDS.length > 0 && typeof S !== 'undefined') {
-          const home = document.getElementById('s-home');
-          const catsHeading = [...home.querySelectorAll('h2')].find(el => el.textContent.includes('Categories'));
-          if (catsHeading) {
-              const wrap = document.createElement('div');
-              wrap.innerHTML = `<h2>Trending this Month <small>AI Curated</small></h2><div class="hrow">${TRENDING_IDS.map(id => { const s = S.find(x => x.id === id); if (!s) return ''; return `<div class="card" data-play="${s.id}" data-ids="${TRENDING_IDS.join(',')}"><div class="art" ${typeof A !== 'undefined' ? A(s) : ''}></div><p>${s.t}</p><span>${s.a}</span></div>`; }).join('')}</div>`;
-              catsHeading.parentNode.insertBefore(wrap, catsHeading);
-          }
-      }
-  };
+  setTimeout(async () => { await loadRealSongs(); }, 1000);
 
-  setTimeout(async () => { await loadRealSongs(); await loadTrending(); }, 1000);
-
-  // ... (Baki Playlist, EQ aur Back button ka code same rahega)
+  // --- Baki saara UI logic (Playlist, EQ, Back button) same rahega ---
   document.addEventListener('click', function(e) {
       const plRow = e.target.closest('[data-pl]');
       if (plRow && !e.target.closest('[data-plplay]')) {
@@ -171,7 +151,7 @@
   }, true);
 
   function openEQSheet() {
-      if(audioCtx) audioCtx.resume();
+      if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
       let html = `<h2 style="margin:4px 0 8px">Equalizer</h2><div style="display:flex;justify-content:space-between;align-items:flex-end;height:180px;padding:20px 10px;background:var(--glass);border-radius:20px;margin-bottom:15px;">`;
       freqs.forEach((freq, i) => { let val = filters[i] ? filters[i].gain.value : 0; let label = freq >= 1000 ? (freq/1000) + 'k' : freq; html += `<div style="display:flex;flex-direction:column;align-items:center;gap:10px;"><input type="range" class="eq-slider" data-index="${i}" min="-12" max="12" step="1" value="${val}" style="writing-mode: vertical-lr; direction: rtl; -webkit-appearance: slider-vertical; width: 20px; height: 120px; accent-color: var(--c2);"><span style="font-size:11px;color:var(--mut);font-weight:600">${label}</span></div>`; });
       html += `</div><div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;"><button class="chip on" onclick="applyEQPreset('flat')">Flat</button><button class="chip" onclick="applyEQPreset('bass')">Bass Boost</button><button class="chip" onclick="applyEQPreset('vocal')">Vocal</button><button class="chip" onclick="applyEQPreset('rock')">Rock</button></div>`;
