@@ -1,14 +1,9 @@
 (function(){
   const API = window.VAULTIFY_CONFIG?.apiBase || '';
   const ICON_URL = "https://vaultify-v2-gamma.vercel.app/vaultify.png";
+  const MAX_CACHE_MB = 500; // Real 500MB Cache
 
-  // --- 1. CACHE ENGINE (Real Storage) ---
-  let maxCacheMB = 500;
-  try {
-    const c = JSON.parse(localStorage.getItem('vaultify_cache') || '{}');
-    if (c.maxMB) maxCacheMB = c.maxMB;
-  } catch(e) {}
-
+  // 1. Check if file is in storage
   async function getCachedUrl(song) {
     if (!window.Capacitor || !window.Capacitor.Plugins.Filesystem) return null;
     try {
@@ -22,6 +17,7 @@
     return null;
   }
 
+  // 2. Background Download (Lowest Quality TG stream)
   async function downloadSong(song) {
     if (!window.Capacitor || !window.Capacitor.Plugins.Filesystem) return;
     const path = `song_${song.id}.mp3`;
@@ -32,6 +28,7 @@
     } catch(e) {}
   }
 
+  // 3. Delete Oldest if > 500MB
   async function enforceCacheLimit() {
     if (!window.Capacitor || !window.Capacitor.Plugins.Filesystem) return;
     try {
@@ -45,17 +42,18 @@
         }
       }
       let totalMB = totalSize / (1024 * 1024);
-      if (totalMB <= maxCacheMB) return;
-      files.sort((a, b) => a.mtime - b.mtime); // Delete oldest
+      if (totalMB <= MAX_CACHE_MB) return;
+      
+      files.sort((a, b) => a.mtime - b.mtime); // Oldest first
       for (const f of files) {
-        if (totalMB <= maxCacheMB) break;
+        if (totalMB <= MAX_CACHE_MB) break;
         await window.Capacitor.Plugins.Filesystem.deleteFile({ path: f.name, directory: 'CACHE' });
         totalMB -= (f.size / (1024 * 1024));
       }
     } catch(e) {}
   }
 
-  // --- 2. LOAD SONGS ---
+  // 4. Load Songs with PERMANENT IMAGE LINKS
   async function loadRealSongs() {
     try {
       const res = await fetch(API + '/songs').then(r => r.json());
@@ -67,47 +65,32 @@
                 S.push({ 
                   id: i+1, t: s.title, a: s.artist, cat: 'Vaultify', src: 'tg', 
                   c: ['#7c5cff','#00d4ff'], d: s.duration || 180, bpm: 100, 
-                  _fileId: s.file_id, _audioUrl: s.audio_url, _backendId: s.id 
+                  _fileId: s.file_id, _backendId: s.id 
                 });
+                
+                // Yahan humne permanent backend link set kiya hai
                 if (s.thumb_url) {
-                    if (typeof artCache !== 'undefined') artCache[i+1] = `url('${s.thumb_url}')`;
-                } else if (s.thumb_file_id) {
-                    if (typeof artCache !== 'undefined') artCache[i+1] = `url('${API}/thumb?file_id=${s.thumb_file_id}')`;
+                    if (typeof artCache !== 'undefined') artCache[i+1] = `url('${API}${s.thumb_url}')`;
                 }
             });
             if (typeof go !== 'undefined') go('home');
         }
       }
-    } catch (e) { console.log("Load error:", e); }
+    } catch (e) { console.log(e); }
   }
 
-  // --- 3. AUDIO PLAYER ---
+  // 5. Audio Player (Fixed Reset Logic)
   let audioEl = null;
   
-  function updateMediaSession(s) {
-      if (!s || !('mediaSession' in navigator)) return;
-      try {
-          navigator.mediaSession.metadata = new MediaMetadata({
-              title: s.t, artist: s.a, album: 'Vaultify',
-              artwork: [{ src: ICON_URL, sizes: '512x512', type: 'image/png' }]
-          });
-          navigator.mediaSession.setActionHandler('play', () => { if(typeof toggle !== 'undefined') toggle(); });
-          navigator.mediaSession.setActionHandler('pause', () => { if(typeof toggle !== 'undefined') toggle(); });
-          navigator.mediaSession.setActionHandler('nexttrack', () => { if(typeof next !== 'undefined') next(); });
-          navigator.mediaSession.setActionHandler('previoustrack', () => { if(typeof prev !== 'undefined') prev(); });
-      } catch(e) {}
-  }
-
   const _startCur = window.startCur;
   window.startCur = async function() {
     if (_startCur) _startCur();
     const s = typeof cur !== 'undefined' ? cur() : null;
     if (!s) return;
-    updateMediaSession(s);
 
     if (!audioEl) {
       audioEl = new Audio(); 
-      audioEl.preload = "auto"; // Instant play
+      audioEl.preload = "auto";
       audioEl.addEventListener('timeupdate', () => { 
           if (typeof U !== 'undefined') U.T = audioEl.currentTime; 
           if (typeof tick !== 'undefined') tick(); 
@@ -115,14 +98,18 @@
       audioEl.addEventListener('ended', () => { if (typeof next !== 'undefined') next(); });
     }
     
-    // 1. Check Real Cache
+    // RESET AUDIO BEFORE PLAYING NEW SONG (Fixes first song only issue)
+    audioEl.pause();
+    audioEl.src = "";
+    audioEl.load();
+
+    // Check Cache First
     let srcUrl = await getCachedUrl(s);
     
-    // 2. If not cached, play direct & download in background
+    // If not in cache, play direct & download background
     if (!srcUrl) {
       if (s._fileId) srcUrl = API + '/audio?file_id=' + encodeURIComponent(s._fileId);
-      else if (s._audioUrl) srcUrl = API + '/audio?url=' + encodeURIComponent(s._audioUrl);
-      if (s._fileId) downloadSong(s); // Background download
+      if (s._fileId) downloadSong(s); 
     }
 
     if (srcUrl) { 
@@ -133,18 +120,9 @@
     }
   };
 
-  const _toggle = window.toggle;
-  window.toggle = function() {
-    if (_toggle) _toggle();
-    if (audioEl && typeof U !== 'undefined') { 
-        if (U.playing) { audioEl.play().catch(()=>{}); if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "playing"; } 
-        else { audioEl.pause(); if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "paused"; } 
-    }
-  };
-
   setTimeout(async () => { await loadRealSongs(); }, 800);
 
-  // --- 4. PLAYLIST & BACK BUTTON ---
+  // Playlist view logic
   document.addEventListener('click', function(e) {
       const plRow = e.target.closest('[data-pl]');
       if (plRow && !e.target.closest('[data-plplay]')) {
@@ -167,17 +145,4 @@
       }
   }, true);
 
-  document.addEventListener('DOMContentLoaded', () => {
-      if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
-          const { App } = window.Capacitor.Plugins;
-          App.addListener('backButton', ({ canGoBack }) => {
-              const ov = document.getElementById('ov');
-              if (ov && ov.classList.contains('show')) { if (typeof closeSheet !== 'undefined') closeSheet(); return; }
-              const full = document.getElementById('full');
-              if (full && full.classList.contains('open')) { if (typeof closeFull !== 'undefined') closeFull(); return; }
-              if (typeof U !== 'undefined' && U.tab !== 'home') { if (typeof go !== 'undefined') go('home'); return; }
-              if (canGoBack) { window.history.back(); } else { App.exitApp(); }
-          });
-      }
-  });
 })();

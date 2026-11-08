@@ -36,15 +36,14 @@ router.get('/songs', async (req, res) => {
         if (Array.isArray(data[key])) {
           data[key].forEach(s => {
             if(typeof s === 'object') {
+              const thumb_id = s.thumb || s.thumbnail || s.thumb_file_id;
               allSongs.push({
                 id: s.id || s.songId || `song_${idx++}`,
                 title: s.title || s.name || s.songName || 'Unknown Title',
                 artist: s.artist || s.singer || s.artistName || 'Unknown Artist',
                 file_id: s.file_id || s.fileId || s.document_file_id || s.audio_file_id || s.url || null,
-                audio_url: s.audio_url || s.url || null,
                 duration: s.duration || s.time || 180,
-                thumb_file_id: s.thumb || s.thumbnail || s.thumb_file_id || null,
-                thumb_url: s.thumb_url || s.image || s.img_url || null
+                thumb_url: thumb_id ? `/api/thumb?file_id=${thumb_id}` : null
               });
             }
           });
@@ -55,10 +54,9 @@ router.get('/songs', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// 302 Redirect for INSTANT play (Bypasses Vercel download)
+// Instant Audio Redirect
 router.get('/audio', async (req, res) => {
   const fileId = req.query.file_id;
-  if (req.query.url) return res.redirect(req.query.url);
   if (!fileId) return res.status(400).send('No file_id');
   const token = BOTS[rrIndex++ % BOTS.length];
   try {
@@ -68,6 +66,7 @@ router.get('/audio', async (req, res) => {
   } catch (e) { res.status(500).send(e.message); }
 });
 
+// PERMANENT IMAGE LINK (Streams directly, caches for 1 year)
 router.get('/thumb', async (req, res) => {
   const fileId = req.query.file_id;
   if (!fileId) return res.status(400).send('No file_id');
@@ -75,7 +74,11 @@ router.get('/thumb', async (req, res) => {
   try {
     const { data } = await axios.get(`https://api.telegram.org/bot${token}/getFile`, { params: { file_id: fileId } });
     if (!data.ok) throw new Error(data.description);
-    res.redirect(`https://api.telegram.org/file/bot${token}/${data.result.file_path}`);
+    const imageUrl = `https://api.telegram.org/file/bot${token}/${data.result.file_path}`;
+    const imageStream = await axios.get(imageUrl, { responseType: 'stream' });
+    res.setHeader('Content-Type', 'image/jpeg');
+    res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 Year Cache (Permanent)
+    imageStream.data.pipe(res);
   } catch (e) { res.status(500).send(e.message); }
 });
 

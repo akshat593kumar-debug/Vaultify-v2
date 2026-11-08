@@ -19,15 +19,15 @@ body{display:grid;place-items:center;transition:background .5s,color .5s}
 #app{position:relative;width:100%;height:100dvh;background:#000;overflow:hidden;isolation:isolate;transition:background .5s}
 @media(min-width:520px){#app{width:410px;height:860px;border-radius:54px;border:9px solid #151515;box-shadow:0 0 0 1px #333,0 40px 120px rgba(124,92,255,.25)}}
 
-/* SIMPLE UI (Black & White Fast Mode) */
+/* SIMPLE UI */
 body.simple-ui{--glass:#0a0a0a;--glass2:#111;--line:#333;--tx:#fff;--mut:#aaa;--c1:#fff;--c2:#fff}
 body.simple-ui .glass{backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none;border:1px solid #222;background:#0a0a0a}
 body.simple-ui .bg{display:none}
 body.simple-ui #full, body.simple-ui #mini, body.simple-ui #nav{backdrop-filter:none;-webkit-backdrop-filter:none;background:#000}
 body.simple-ui .chip.on{background:#fff;color:#000}
 body.simple-ui .pbtn, body.simple-ui .ctl .play{background:#fff;color:#000}
+body.simple-ui .tog{background:#333} body.simple-ui .tog.on{background:#fff}
 
-/* Advanced UI Animations */
 .bg{position:absolute;inset:0;z-index:-1;overflow:hidden;transition:background 1s}
 .bg i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.55;transition:background 1.2s;will-change:transform}
 .bg i:nth-child(1){width:380px;height:380px;left:-120px;top:-60px;background:var(--c1);animation:f1 14s ease-in-out infinite alternate}
@@ -94,7 +94,6 @@ body.simple-ui .logo{background:none;color:#fff;-webkit-text-fill-color:#fff}
 .tog{width:46px;height:28px;border-radius:15px;background:rgba(255,255,255,.18);position:relative;transition:.25s;flex:none}
 .tog::after{content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:.25s;box-shadow:0 2px 6px rgba(0,0,0,.4)}
 .tog.on{background:#34c759}.tog.on::after{left:21px}
-body.simple-ui .tog{background:#333} body.simple-ui .tog.on{background:#fff}
 
 .sbox{display:flex;align-items:center;gap:10px;padding:0 16px;height:48px;border-radius:24px;margin:14px 0 12px}
 .sbox input{flex:1;background:none;border:0;font-size:16px}
@@ -108,17 +107,6 @@ body.simple-ui .btn.g{background:#222}
 .field{width:100%;height:48px;border-radius:16px;padding:0 16px;background:var(--glass);border:1px solid var(--line);font-size:15px}
 .field::placeholder{color:var(--mut)}
 .box{padding:18px;border-radius:26px}
-.mem{display:flex;gap:10px;overflow-x:auto;margin:0 -4px;padding:4px}
-.av{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:16px;flex:none;background-size:cover;background-position:center;border:1.5px solid rgba(255,255,255,.4)}
-.mem div{text-align:center;font-size:11px;color:var(--mut);width:56px;flex:none}
-.mem div .av{margin:0 auto 4px}
-.chat{height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:7px;padding:10px;border-radius:22px;margin-top:10px}
-.msg{max-width:78%;padding:8px 12px;border-radius:16px;font-size:14px;background:rgba(255,255,255,.1);align-self:flex-start}
-.msg small{display:block;font-size:10.5px;color:var(--c2);font-weight:600;margin-bottom:1px}
-.msg.me{align-self:flex-end;background:rgba(255,255,255,.88);color:#000;border-bottom-right-radius:5px}
-.msg.me small{color:#555}
-.msg.sys{align-self:center;background:none;font-size:12px;color:var(--mut)}
-.code{font-size:26px;font-weight:700;letter-spacing:4px;font-variant-numeric:tabular-nums}
 
 .cert{padding:26px 22px;border-radius:30px;text-align:center;position:relative;overflow:hidden}
 .cert::before{content:"";position:absolute;inset:8px;border:1px solid rgba(255,255,255,.22);border-radius:24px;pointer-events:none}
@@ -130,6 +118,9 @@ body.simple-ui .btn.g{background:#222}
 .cert .clk{font-variant-numeric:tabular-nums;font-size:22px;font-weight:700;letter-spacing:1px}
 .stat{display:flex;justify-content:space-between;font-size:13.5px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.08)}
 .stat:last-child{border:0}
+.bar{height:7px;border-radius:5px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--c1),var(--c2));transition:width .6s}
+.dot{width:8px;height:8px;border-radius:50%;background:#34c759;box-shadow:0 0 8px #34c759;display:inline-block;margin-right:6px}
 
 .pf{text-align:center;padding-top:6px}
 .pf .av{width:96px;height:96px;font-size:36px;margin:0 auto 10px;position:relative;border-width:2px}
@@ -184,15 +175,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;heigh
 .sh-h b{display:block;font-size:16px}.sh-h span{font-size:13px;color:var(--mut)}
 .toast{position:absolute;top:64px;left:50%;transform:translate(-50%,-20px);z-index:300;padding:10px 18px;border-radius:20px;font-size:13.5px;font-weight:500;opacity:0;transition:.35s;pointer-events:none;white-space:nowrap;background:rgba(255,255,255,.12)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
-
-.cache-bar{height:8px;border-radius:5px;background:rgba(255,255,255,.08);overflow:hidden;margin:8px 0}
-.cache-bar i{display:block;height:100%;background:#fff;transition:width .4s;border-radius:5px}
-.fps-counter{position:absolute;top:16px;left:16px;z-index:500;background:rgba(0,0,0,.8);color:#0f0;font-family:monospace;font-size:12px;padding:4px 8px;border-radius:6px;display:none;border:1px solid #0f0}
 </style>
 </head>
 <body class="simple-ui">
 <div id="app">
-  <div class="fps-counter" id="fps">FPS: 60</div>
   <div class="bg"><i></i><i></i><i></i></div>
   <div id="notch"><div class="nin"><b></b><div class="eq"><s></s><s></s><s></s><s></s></div></div></div>
   <div class="toast glass" id="toast"></div>
@@ -210,38 +196,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;heigh
 </div>
 
 <script>
-/* ---------- icons (svg) ---------- */
-const P={
-home:'<path d="M3 11l9-8 9 8v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/>',
-search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
-team:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17.5" cy="9" r="2.6"/><path d="M17 14.2c2.6.2 4.5 2 4.5 5"/>',
-cert:'<path d="M12 2l2.4 2.1 3.2-.2.9 3.1 2.7 1.8-1 3 1 3-2.7 1.8-.9 3.1-3.2-.2L12 22l-2.4-2.1-3.2.2-.9-3.1L2.8 15l1-3-1-3 2.7-1.8.9-3.1 3.2.2z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
-user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.2 3.6-7 8-7s8 2.8 8 7"/>',
-play:'<path d="M7 4.5v15l13-7.5z" fill="currentColor"/>',
-pause:'<rect x="6" y="4.5" width="4" height="15" rx="1.2" fill="currentColor"/><rect x="14" y="4.5" width="4" height="15" rx="1.2" fill="currentColor"/>',
-next:'<path d="M6 5v14l10-7z" fill="currentColor"/><path d="M19 5v14"/>',
-prev:'<path d="M18 5v14L8 12z" fill="currentColor"/><path d="M5 5v14"/>',
-shuf:'<path d="M3 7h4l10 10h4M3 17h4l3-3M14 10l3-3h4M18 4l3 3-3 3M18 14l3 3-3 3"/>',
-rep:'<path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 013-3h15M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 01-3 3H3"/>',
-dots:'<circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/>',
-heart:'<path d="M12 21s-8-5.2-8-11a4.6 4.6 0 018-3 4.6 4.6 0 018 3c0 5.8-8 11-8 11z"/>',
-plus:'<path d="M12 5v14M5 12h14"/>',
-queue:'<path d="M3 6h14M3 12h14M3 18h8"/><path d="M17 15v6l5-3z" fill="currentColor"/>',
-next2:'<path d="M3 6h12M3 12h8M3 18h8"/><path d="M16 9l5 3-5 3z" fill="currentColor"/>',
-share:'<path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 13v6a2 2 0 002 2h10a2 2 0 002-2v-6"/>',
-down:'<path d="M6 9l6 6 6-6"/>',
-copy:'<rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6a2 2 0 012-2h9"/>',
-send:'<path d="M3 11l18-8-8 18-2-8z"/>',
-cam:'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.4"/>',
-spark:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" fill="currentColor"/>',
-tg:'<path d="M21 4L3 11l5 2 2 6 3-4 5 4z"/>',
-ig:'<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>',
-out:'<path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>',
-list:'<path d="M4 6h12M4 12h12M4 18h8M19 15v6M16 18h6"/>',
-clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'};
+const P={home:'<path d="M3 11l9-8 9 8v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/>',search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',team:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17.5" cy="9" r="2.6"/><path d="M17 14.2c2.6.2 4.5 2 4.5 5"/>',cert:'<path d="M12 2l2.4 2.1 3.2-.2.9 3.1 2.7 1.8-1 3 1 3-2.7 1.8-.9 3.1-3.2-.2L12 22l-2.4-2.1-3.2.2-.9-3.1L2.8 15l1-3-1-3 2.7-1.8.9-3.1 3.2.2z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.2 3.6-7 8-7s8 2.8 8 7"/>',play:'<path d="M7 4.5v15l13-7.5z" fill="currentColor"/>',pause:'<rect x="6" y="4.5" width="4" height="15" rx="1.2" fill="currentColor"/><rect x="14" y="4.5" width="4" height="15" rx="1.2" fill="currentColor"/>',next:'<path d="M6 5v14l10-7z" fill="currentColor"/><path d="M19 5v14"/>',prev:'<path d="M18 5v14L8 12z" fill="currentColor"/><path d="M5 5v14"/>',shuf:'<path d="M3 7h4l10 10h4M3 17h4l3-3M14 10l3-3h4M18 4l3 3-3 3M18 14l3 3-3 3"/>',rep:'<path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 013-3h15M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 01-3 3H3"/>',dots:'<circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/>',heart:'<path d="M12 21s-8-5.2-8-11a4.6 4.6 0 018-3 4.6 4.6 0 018 3c0 5.8-8 11-8 11z"/>',plus:'<path d="M12 5v14M5 12h14"/>',queue:'<path d="M3 6h14M3 12h14M3 18h8"/><path d="M17 15v6l5-3z" fill="currentColor"/>',next2:'<path d="M3 6h12M3 12h8M3 18h8"/><path d="M16 9l5 3-5 3z" fill="currentColor"/>',share:'<path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 13v6a2 2 0 002 2h10a2 2 0 002-2v-6"/>',down:'<path d="M6 9l6 6 6-6"/>',copy:'<rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6a2 2 0 012-2h9"/>',send:'<path d="M3 11l18-8-8 18-2-8z"/>',cam:'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.4"/>',spark:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" fill="currentColor"/>',tg:'<path d="M21 4L3 11l5 2 2 6 3-4 5 4z"/>',ig:'<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>',out:'<path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>',list:'<path d="M4 6h12M4 12h12M4 18h8M19 15v6M16 18h6"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'};
 const ic=(n,s=22,sw=1.8,fill='none')=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="${fill}" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${P[n]}</svg>`;
 
-/* ---------- data ---------- */
 const S=[
 [1,'Midnight Drive','Aarav Sen','Chill','tg','#7c5cff','#00d4ff',213,92],
 [2,'Neon Rain','Mira Kapoor','Chill','jio','#ff4f9a','#5b3cff',198,88],
@@ -264,9 +221,7 @@ const CATS=[...new Set(S.map(s=>s.cat))];
 const byId=id=>S.find(s=>s.id===id);
 const SRC={tg:'Vaultify',jio:'JioSaavn'};
 
-/* ---------- state ---------- */
-const D={q:[],qi:-1,hist:[],liked:[],pls:[{id:1,name:'My Vibes',ids:[1,5,9]}],auto:true,
- prof:{name:'vault_user',bio:'Music is my second language',pic:''},since:Date.now(),simpleUI:true,showFps:false};
+const D={q:[],qi:-1,hist:[],liked:[],pls:[{id:1,name:'My Vibes',ids:[1,5,9]}],auto:true,prof:{name:'vault_user',bio:'Music is my second language',pic:''},since:Date.now(),simpleUI:true};
 try{Object.assign(D,JSON.parse(localStorage.getItem('vaultify')||'{}'))}catch(e){}
 const save=()=>{try{localStorage.setItem('vaultify',JSON.stringify(D))}catch(e){}};
 const U={tab:'home',cat:'All',pt:'Liked',playing:false,T:0,shuf:false,rep:false,full:false,fpTab:'now',aiNext:null,aiWhy:'',room:null,srcF:'All',query:''};
@@ -275,23 +230,7 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 const fmt=t=>{t=Math.max(0,Math.floor(t));return Math.floor(t/60)+':'+String(t%60).padStart(2,'0')};
 const cur=()=>byId(D.q[D.qi]);
 
-// Apply UI settings on load
 if(D.simpleUI) document.body.classList.add('simple-ui'); else document.body.classList.remove('simple-ui');
-if(D.showFps) { $('#fps').style.display = 'block'; } else { $('#fps').style.display = 'none'; }
-
-// FPS Loop
-let lastFrame = performance.now();
-function updateFps() {
-    if(D.showFps) {
-        const now = performance.now();
-        const fps = Math.round(1000 / (now - lastFrame));
-        lastFrame = now;
-        const el = $('#fps');
-        if(el) el.textContent = 'FPS: ' + fps;
-    }
-    requestAnimationFrame(updateFps);
-}
-requestAnimationFrame(updateFps);
 
 const artCache={};
 function art(s){return artCache[s.id]||(artCache[s.id]=`url('data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${s.c[0]}"/><stop offset="1" stop-color="${s.c[1]}"/></linearGradient></defs><rect width="100" height="100" fill="url(#g)"/><circle cx="${20+s.id*4%60}" cy="${70-s.id*3%40}" r="${26+s.id%3*6}" fill="#fff" opacity=".16"/><circle cx="${80-s.id*5%50}" cy="${25+s.id*4%40}" r="18" fill="#000" opacity=".18"/><path d="M0 ${60+s.id%4*6} Q 30 ${40+s.id%5*5} 55 ${62} T 100 ${55}" stroke="#fff" stroke-width="2" fill="none" opacity=".35"/></svg>`)}`)}
@@ -302,258 +241,64 @@ function sheet(h){$('#sheet').innerHTML='<div class="grab"></div>'+h;$('#ov').cl
 function closeSheet(){$('#ov').classList.remove('show')}
 $('#ov').addEventListener('click',e=>{if(e.target.id==='ov')closeSheet()});
 
-function aiPick(){
-  const c=cur(),recent=D.hist.slice(0,8).map(h=>h.id);
-  const pool=S.filter(s=>!c||s.id!==c.id);
-  const sc=s=>{let v=Math.random()*1.2;if(recent.includes(s.id))v-=4;if(D.liked.includes(s.id))v+=1;
-    if(c){if(s.cat===c.cat)v+=3;if(s.a===c.a)v+=1.5;v+=Math.max(0,2-Math.abs(s.bpm-c.bpm)/20)}
-    const h=new Date().getHours();if((h>=22||h<5)&&['Chill','Lofi','Sad'].includes(s.cat))v+=1.5;if(h>=6&&h<10&&['Devotional','Focus'].includes(s.cat))v+=1.5;return v};
-  const best=pool.sort((a,b)=>sc(b)-sc(a))[0];
-  U.aiNext=best.id;
-  U.aiWhy=c?(best.cat===c.cat?`Same mood: ${best.cat}, similar tempo`:`Fresh pick matched to your time of day`):`Picked for ${new Date().getHours()>=18?'tonight':'today'}`;
-  return best.id;
-}
-
+function aiPick(){const c=cur(),recent=D.hist.slice(0,8).map(h=>h.id);const pool=S.filter(s=>!c||s.id!==c.id);const sc=s=>{let v=Math.random()*1.2;if(recent.includes(s.id))v-=4;if(D.liked.includes(s.id))v+=1;if(c){if(s.cat===c.cat)v+=3;if(s.a===c.a)v+=1.5;v+=Math.max(0,2-Math.abs(s.bpm-c.bpm)/20)}const h=new Date().getHours();if((h>=22||h<5)&&['Chill','Lofi','Sad'].includes(s.cat))v+=1.5;if(h>=6&&h<10&&['Devotional','Focus'].includes(s.cat))v+=1.5;return v};const best=pool.sort((a,b)=>sc(b)-sc(a))[0];U.aiNext=best.id;U.aiWhy=c?(best.cat===c.cat?`Same mood: ${best.cat}, similar tempo`:`Fresh pick matched to your time of day`):`Picked for ${new Date().getHours()>=18?'tonight':'today'}`;return best.id}
 function setTheme(s){const r=document.documentElement.style;if(!D.simpleUI){r.setProperty('--c1',s.c[0]);r.setProperty('--c2',s.c[1])}else{r.setProperty('--c1','#fff');r.setProperty('--c2','#fff')}}
 function playIds(ids,i=0,sync=true){D.q=ids.slice();D.qi=i;startCur();if(sync&&U.room)bc({type:'play',id:D.q[D.qi]})}
-function startCur(){
-  const s=cur();if(!s)return;U.T=0;U.playing=true;setTheme(s);
-  D.hist=D.hist.filter(h=>h.id!==s.id);D.hist.unshift({id:s.id,at:Date.now()});D.hist=D.hist.slice(0,50);
-  U.aiNext=null;aiPick();save();paint();
-}
+function startCur(){const s=cur();if(!s)return;U.T=0;U.playing=true;setTheme(s);D.hist=D.hist.filter(h=>h.id!==s.id);D.hist.unshift({id:s.id,at:Date.now()});D.hist=D.hist.slice(0,50);U.aiNext=null;aiPick();save();paint()}
 function toggle(){if(!cur())return;U.playing=!U.playing;paint()}
-function next(){
-  if(!D.q.length)return;
-  if(U.rep&&U.T>=cur().d-1){U.T=0;return}
-  if(U.shuf&&D.q.length>1){D.qi=Math.floor(Math.random()*D.q.length)}
-  else if(D.qi<D.q.length-1)D.qi++;
-  else if(D.auto){D.q.push(U.aiNext||aiPick());D.qi++;toast('AI added: '+byId(D.q[D.qi]).t)}
-  else{U.playing=false;U.T=0;paint();return}
-  startCur();if(U.room)bc({type:'play',id:D.q[D.qi]});
-}
+function next(){if(!D.q.length)return;if(U.rep&&U.T>=cur().d-1){U.T=0;return}if(U.shuf&&D.q.length>1){D.qi=Math.floor(Math.random()*D.q.length)}else if(D.qi<D.q.length-1)D.qi++;else if(D.auto){D.q.push(U.aiNext||aiPick());D.qi++;toast('AI added: '+byId(D.q[D.qi]).t)}else{U.playing=false;U.T=0;paint();return}startCur();if(U.room)bc({type:'play',id:D.q[D.qi]})}
 function prev(){if(U.T>4){U.T=0;paint();return}if(D.qi>0){D.qi--;startCur()}}
 setInterval(()=>{if(!U.playing||!cur())return;U.T+=.25;if(U.T>=cur().d)next();tick()},250);
-function tick(){const s=cur();if(!s)return;const p=U.T/s.d*100;
-  const g=$('#mini .pg i');if(g)g.style.width=p+'%';
-  const r=$('#seek');if(r&&!r.dragging){r.value=U.T;r.style.setProperty('--p',p+'%')}
-  const a=$('#tcur');if(a)a.textContent=fmt(U.T);const b=$('#trem');if(b)b.textContent='-'+fmt(s.d-U.T)}
-(function loop(){const s=cur(),n=$('#notch');
-  if(s&&U.playing&&!D.simpleUI){const ms=60000/s.bpm,ph=(performance.now()%ms)/ms;n.style.setProperty('--beat',(1+.075*Math.pow(1-ph,3)).toFixed(3))}
-  else n.style.setProperty('--beat',1);
-  requestAnimationFrame(loop)})();
+function tick(){const s=cur();if(!s)return;const p=U.T/s.d*100;const g=$('#mini .pg i');if(g)g.style.width=p+'%';const r=$('#seek');if(r&&!r.dragging){r.value=U.T;r.style.setProperty('--p',p+'%')}const a=$('#tcur');if(a)a.textContent=fmt(U.T);const b=$('#trem');if(b)b.textContent='-'+fmt(s.d-U.T)}
 
 function addQueue(id){if(!D.q.length){playIds([id]);return}D.q.push(id);save();toast('Added to queue');paint()}
 function playNext(id){if(!D.q.length){playIds([id]);return}D.q.splice(D.qi+1,0,id);save();toast('Will play next');paint()}
 function like(id){const i=D.liked.indexOf(id);i<0?D.liked.push(id):D.liked.splice(i,1);save();toast(i<0?'Added to Liked':'Removed from Liked');paint()}
 
-function menu(id){const s=byId(id);const l=D.liked.includes(id);
-  sheet(`<div class="sh-h"><div class="art" ${A(s)}></div><div><b>${esc(s.t)}</b><span>${esc(s.a)} · ${SRC[s.src]}</span></div></div>
-  <button class="opt" data-a="pl" data-id="${id}">${ic('list')}Add to playlist</button>
-  <button class="opt" data-a="pn" data-id="${id}">${ic('next2')}Play next</button>
-  <button class="opt" data-a="aq" data-id="${id}">${ic('queue')}Add to queue</button>
-  <button class="opt" data-a="lk" data-id="${id}">${ic('heart',22,1.8,l?'currentColor':'none')}${l?'Remove from Liked':'Like'}</button>
-  <button class="opt" data-a="sh" data-id="${id}">${ic('share')}Share</button>`)}
-function plPicker(id){
-  sheet(`<h2 style="margin:4px 0 8px">Add to playlist</h2>
-  ${D.pls.map(p=>`<button class="opt" data-a="pladd" data-id="${id}" data-p="${p.id}">${ic('list')}${esc(p.name)} <small style="margin-left:auto;color:var(--mut)">${p.ids.length}</small></button>`).join('')}
-  <div style="display:flex;gap:8px;margin-top:10px"><input class="field" id="npn" placeholder="New playlist name"><button class="btn" data-a="plnew" data-id="${id}">Create</button></div>`)}
+function menu(id){const s=byId(id);const l=D.liked.includes(id);sheet(`<div class="sh-h"><div class="art" ${A(s)}></div><div><b>${esc(s.t)}</b><span>${esc(s.a)} · ${SRC[s.src]}</span></div></div><button class="opt" data-a="pl" data-id="${id}">${ic('list')}Add to playlist</button><button class="opt" data-a="pn" data-id="${id}">${ic('next2')}Play next</button><button class="opt" data-a="aq" data-id="${id}">${ic('queue')}Add to queue</button><button class="opt" data-a="lk" data-id="${id}">${ic('heart',22,1.8,l?'currentColor':'none')}${l?'Remove from Liked':'Like'}</button><button class="opt" data-a="sh" data-id="${id}">${ic('share')}Share</button>`)}
+function plPicker(id){sheet(`<h2 style="margin:4px 0 8px">Add to playlist</h2>${D.pls.map(p=>`<button class="opt" data-a="pladd" data-id="${id}" data-p="${p.id}">${ic('list')}${esc(p.name)} <small style="margin-left:auto;color:var(--mut)">${p.ids.length}</small></button>`).join('')}<div style="display:flex;gap:8px;margin-top:10px"><input class="field" id="npn" placeholder="New playlist name"><button class="btn" data-a="plnew" data-id="${id}">Create</button></div>`)}
 function shareLink(id){return 'https://vaultify.app/s/'+id.toString(36)+Math.random().toString(36).slice(2,7)}
-function shareSheet(id){const s=byId(id),link=shareLink(id);
-  sheet(`<div class="sh-h"><div class="art" ${A(s)}></div><div><b>${esc(s.t)}</b><span>Share link generated</span></div></div>
-  <input class="field" id="lk" readonly value="${link}" style="margin:6px 0 12px">
-  <button class="btn w" data-a="cp">${ic('copy',18)}Copy link</button>
-  <button class="btn g w" style="margin-top:10px" data-a="ns" data-t="${esc(s.t)}">${ic('share',18)}Share to any app</button>
-  <p class="sub" style="text-align:center;margin-top:12px;font-size:12px">Opens in Vaultify, or in the browser if the app isn't installed</p>`)}
+function shareSheet(id){const s=byId(id),link=shareLink(id);sheet(`<div class="sh-h"><div class="art" ${A(s)}></div><div><b>${esc(s.t)}</b><span>Share link generated</span></div></div><input class="field" id="lk" readonly value="${link}" style="margin:6px 0 12px"><button class="btn w" data-a="cp">${ic('copy',18)}Copy link</button><button class="btn g w" style="margin-top:10px" data-a="ns" data-t="${esc(s.t)}">${ic('share',18)}Share to any app</button><p class="sub" style="text-align:center;margin-top:12px;font-size:12px">Opens in Vaultify, or in the browser if the app isn't installed</p>`)}
 
-function row(s,ids){const nowp=cur()&&cur().id===s.id;
-  return `<div class="row ${nowp?'now':''}" data-play="${s.id}"><div class="art" ${A(s)}></div>
-  <div class="m"><b>${esc(s.t)}</b><span>${esc(s.a)}<i class="tag">${s.src==='tg'?'TG':'JIO'}</i></span></div>
-  <button class="dots" data-menu="${s.id}">${ic('dots',20)}</button></div>`}
+function row(s,ids){const nowp=cur()&&cur().id===s.id;return `<div class="row ${nowp?'now':''}" data-play="${s.id}"><div class="art" ${A(s)}></div><div class="m"><b>${esc(s.t)}</b><span>${esc(s.a)}<i class="tag">${s.src==='tg'?'TG':'JIO'}</i></span></div><button class="dots" data-menu="${s.id}">${ic('dots',20)}</button></div>`}
 const list=ids=>`<div class="list" data-ids="${ids.join(',')}">${ids.map(i=>row(byId(i))).join('')}</div>`;
 
-function rHome(){
-  const h=new Date().getHours(),g=h<5?'Late night':h<12?'Good morning':h<17?'Good afternoon':h<21?'Good evening':'Good night';
-  if(!U.aiNext)aiPick();const n=byId(U.aiNext);
-  const tr=S.filter(s=>U.cat==='All'||s.cat===U.cat).map(s=>s.id);
-  const rec=[...S].sort((a,b)=>(b.cat===(cur()||{}).cat)-(a.cat===(cur()||{}).cat)).slice(0,8);
-  $('#s-home').innerHTML=`
-  <div class="top"><div><div class="logo">Vaultify</div><div class="sub">${g}, ${esc(D.prof.name)}</div></div>
-  <button class="ibtn glass" data-tab="profile">${ic('user',19)}</button></div>
-  <div class="ai glass"><div class="art" ${A(n)}></div><div class="t"><em>${ic('spark',12)}AI up next</em><b>${esc(n.t)}</b><span>${esc(U.aiWhy)}</span></div>
-  <button class="pbtn" data-aiplay="1">${ic('play',20)}</button></div>
-  <div class="sw glass"><span>AI autoplay<br><small style="color:var(--mut)">Keeps songs changing on its own</small></span><div class="tog ${D.auto?'on':''}" data-auto="1"></div></div>
-  <h2>Categories</h2>
-  <div class="chips">${['All',...CATS].map(c=>`<button class="chip ${U.cat===c?'on':''}" data-cat="${c}">${c}</button>`).join('')}</div>
-  <h2>Recommended <small>by Vaultify AI</small></h2>
-  <div class="hrow" data-ids="${rec.map(s=>s.id).join(',')}">${rec.map(s=>`<div class="card" data-play="${s.id}"><div class="art" ${A(s)}></div><p>${esc(s.t)}</p><span>${esc(s.a)}</span></div>`).join('')}</div>
-  <h2>${U.cat==='All'?'Trending':U.cat}<small>${tr.length} songs</small></h2>${list(tr)}
-  ${D.hist.length?`<h2>Recently played</h2>${list(D.hist.slice(0,5).map(h=>h.id))}`:''}`;
-}
-function searchRes(q){
-  const t=q.toLowerCase().split(/\s+/).filter(Boolean);
-  return S.map(s=>{const hay=(s.t+' '+s.a+' '+s.cat+' '+SRC[s.src]).toLowerCase();let sc=0;
-    t.forEach(w=>{if(s.t.toLowerCase().startsWith(w))sc+=4;if(hay.includes(w))sc+=2;else if(w.length>3&&hay.split(' ').some(x=>x.startsWith(w.slice(0,3))))sc+=.6});return{s,sc}})
-   .filter(x=>x.sc>0&&(U.srcF==='All'||x.s.src===(U.srcF==='Vaultify'?'tg':'jio'))).sort((a,b)=>b.sc-a.sc).map(x=>x.s.id)}
-function rSearch(){
-  $('#s-search').innerHTML=`<h1>Search</h1>
-  <div class="sbox glass">${ic('search',20)}<input id="q" placeholder="Songs, artists, moods..." value="${esc(U.query)}" autocomplete="off"></div>
-  <div class="chips">${['All','Vaultify','JioSaavn'].map(c=>`<button class="chip ${U.srcF===c?'on':''}" data-src="${c}">${c}</button>`).join('')}</div>
-  <div id="res"></div>`;doSearch(false);
-  $('#q').addEventListener('input',e=>{U.query=e.target.value;clearTimeout(window.sd);window.sd=setTimeout(()=>doSearch(true),120)});
-}
-function doSearch(skel){
-  const el=$('#res');if(!el)return;const q=U.query.trim();
-  if(!q){el.innerHTML=`<div class="meter"><span>Try a mood</span></div><div class="chips" style="flex-wrap:wrap;margin:0;padding:0">${CATS.map(c=>`<button class="chip" data-q="${c}">${c}</button>`).join('')}</div>`;return}
-  const t0=performance.now(),ids=searchRes(q);
-  const out=()=>{const ms=(performance.now()-t0+(skel?40:0)).toFixed(0);
-    el.innerHTML=ids.length?`<div class="meter"><span>${ids.length} results from Vaultify + JioSaavn</span><span>${ms} ms</span></div>${list(ids)}`:`<div class="empty">No songs found for "${esc(q)}"</div>`};
-  if(skel){el.innerHTML='<div class="skel"></div><div class="skel"></div><div class="skel"></div>';setTimeout(out,160)}else out();
-}
-function rTeam(){
-  const r=U.room,el=$('#s-team');
-  if(!r){el.innerHTML=`<h1>Team Mode</h1><p class="sub">Listen together. Everyone hears the same song, live chat included.</p>
-  <div class="box glass" style="margin-top:18px;text-align:center"><div style="display:grid;place-items:center;margin:4px 0 10px">${ic('team',46,1.4)}</div>
-  <b style="font-size:17px">Create a room</b><p class="sub" style="margin:4px 0 14px">A code is generated. Share it, anyone can join.</p><button class="btn w" data-a="mk">Create room</button></div>
-  <div class="box glass" style="margin-top:14px"><b style="font-size:17px">Join with code</b>
-  <div style="display:flex;gap:8px;margin-top:12px"><input class="field" id="jc" placeholder="VLT-XXXX" maxlength="8" style="text-transform:uppercase;letter-spacing:2px"><button class="btn" data-a="jn">Join</button></div></div>`;return}
-  const c=cur();
-  el.innerHTML=`<div class="top"><div><h1>Room</h1><p class="sub">${r.members.length} listening now</p></div><button class="btn g" style="height:40px;padding:0 16px" data-a="lv">${ic('out',16)}Leave</button></div>
-  <div class="box glass" style="text-align:center"><div class="sub" style="font-size:11px;letter-spacing:2px">ROOM CODE</div>
-  <div class="code">${r.code}</div><button class="btn g" style="height:38px;margin-top:10px;font-size:13px" data-a="cc">${ic('copy',16)}Copy code</button></div>
-  <h2>Members <small>${r.members.length}</small></h2>
-  <div class="mem">${r.members.map(m=>`<div><div class="av glass" style="${m.me&&D.prof.pic?`background-image:url('${D.prof.pic}')`:''}">${m.me&&D.prof.pic?'':esc(m.n[0].toUpperCase())}</div>${esc(m.me?'You':m.n)}${m.host?'<br><span class="tag">HOST</span>':''}</div>`).join('')}</div>
-  <h2>Now playing</h2>
-  ${c?`<div class="row now" data-open="1"><div class="art" ${A(c)}></div><div class="m"><b>${esc(c.t)}</b><span>${esc(c.a)}<i class="tag">SYNCED</i></span></div></div>`:`<div class="empty glass" style="border-radius:20px;padding:24px">Play any song, the whole room hears it</div>`}
-  <h2>Chat</h2>
-  <div class="chat glass" id="chat">${r.chat.map(chatHtml).join('')}</div>
-  <div style="display:flex;gap:8px;margin-top:10px"><input class="field" id="cm" placeholder="Message the room"><button class="btn" style="padding:0 16px" data-a="sd">${ic('send',20)}</button></div>`;
-  const ch=$('#chat');ch.scrollTop=ch.scrollHeight;
-  $('#cm').addEventListener('keydown',e=>{if(e.key==='Enter')sendChat()});
-}
+function rHome(){const h=new Date().getHours(),g=h<5?'Late night':h<12?'Good morning':h<17?'Good afternoon':h<21?'Good evening':'Good night';if(!U.aiNext)aiPick();const n=byId(U.aiNext);const tr=S.filter(s=>U.cat==='All'||s.cat===U.cat).map(s=>s.id);const rec=[...S].sort((a,b)=>(b.cat===(cur()||{}).cat)-(a.cat===(cur()||{}).cat)).slice(0,8);$('#s-home').innerHTML=`<div class="top"><div><div class="logo">Vaultify</div><div class="sub">${g}, ${esc(D.prof.name)}</div></div><button class="ibtn glass" data-tab="profile">${ic('user',19)}</button></div><div class="ai glass"><div class="art" ${A(n)}></div><div class="t"><em>${ic('spark',12)}AI up next</em><b>${esc(n.t)}</b><span>${esc(U.aiWhy)}</span></div><button class="pbtn" data-aiplay="1">${ic('play',20)}</button></div><div class="sw glass"><span>AI autoplay<br><small style="color:var(--mut)">Keeps songs changing on its own</small></span><div class="tog ${D.auto?'on':''}" data-auto="1"></div></div><h2>Categories</h2><div class="chips">${['All',...CATS].map(c=>`<button class="chip ${U.cat===c?'on':''}" data-cat="${c}">${c}</button>`).join('')}</div><h2>Recommended <small>by Vaultify AI</small></h2><div class="hrow" data-ids="${rec.map(s=>s.id).join(',')}">${rec.map(s=>`<div class="card" data-play="${s.id}"><div class="art" ${A(s)}></div><p>${esc(s.t)}</p><span>${esc(s.a)}</span></div>`).join('')}</div><h2>${U.cat==='All'?'Trending':U.cat}<small>${tr.length} songs</small></h2>${list(tr)}${D.hist.length?`<h2>Recently played</h2>${list(D.hist.slice(0,5).map(h=>h.id))}`:''}`}
+function searchRes(q){const t=q.toLowerCase().split(/\s+/).filter(Boolean);return S.map(s=>{const hay=(s.t+' '+s.a+' '+s.cat+' '+SRC[s.src]).toLowerCase();let sc=0;t.forEach(w=>{if(s.t.toLowerCase().startsWith(w))sc+=4;if(hay.includes(w))sc+=2;else if(w.length>3&&hay.split(' ').some(x=>x.startsWith(w.slice(0,3))))sc+=.6});return{s,sc}}).filter(x=>x.sc>0&&(U.srcF==='All'||x.s.src===(U.srcF==='Vaultify'?'tg':'jio'))).sort((a,b)=>b.sc-a.sc).map(x=>x.s.id)}
+function rSearch(){$('#s-search').innerHTML=`<h1>Search</h1><div class="sbox glass">${ic('search',20)}<input id="q" placeholder="Songs, artists, moods..." value="${esc(U.query)}" autocomplete="off"></div><div class="chips">${['All','Vaultify','JioSaavn'].map(c=>`<button class="chip ${U.srcF===c?'on':''}" data-src="${c}">${c}</button>`).join('')}</div><div id="res"></div>`;doSearch(false);$('#q').addEventListener('input',e=>{U.query=e.target.value;clearTimeout(window.sd);window.sd=setTimeout(()=>doSearch(true),120)})}
+function doSearch(skel){const el=$('#res');if(!el)return;const q=U.query.trim();if(!q){el.innerHTML=`<div class="meter"><span>Try a mood</span></div><div class="chips" style="flex-wrap:wrap;margin:0;padding:0">${CATS.map(c=>`<button class="chip" data-q="${c}">${c}</button>`).join('')}</div>`;return}const t0=performance.now(),ids=searchRes(q);const out=()=>{const ms=(performance.now()-t0+(skel?40:0)).toFixed(0);el.innerHTML=ids.length?`<div class="meter"><span>${ids.length} results from Vaultify + JioSaavn</span><span>${ms} ms</span></div>${list(ids)}`:`<div class="empty">No songs found for "${esc(q)}"</div>`};if(skel){el.innerHTML='<div class="skel"></div><div class="skel"></div><div class="skel"></div>';setTimeout(out,160)}else out()}
+function rTeam(){const r=U.room,el=$('#s-team');if(!r){el.innerHTML=`<h1>Team Mode</h1><p class="sub">Listen together. Everyone hears the same song, live chat included.</p><div class="box glass" style="margin-top:18px;text-align:center"><div style="display:grid;place-items:center;margin:4px 0 10px">${ic('team',46,1.4)}</div><b style="font-size:17px">Create a room</b><p class="sub" style="margin:4px 0 14px">A code is generated. Share it, anyone can join.</p><button class="btn w" data-a="mk">Create room</button></div><div class="box glass" style="margin-top:14px"><b style="font-size:17px">Join with code</b><div style="display:flex;gap:8px;margin-top:12px"><input class="field" id="jc" placeholder="VLT-XXXX" maxlength="8" style="text-transform:uppercase;letter-spacing:2px"><button class="btn" data-a="jn">Join</button></div></div>`;return}const c=cur();el.innerHTML=`<div class="top"><div><h1>Room</h1><p class="sub">${r.members.length} listening now</p></div><button class="btn g" style="height:40px;padding:0 16px" data-a="lv">${ic('out',16)}Leave</button></div><div class="box glass" style="text-align:center"><div class="sub" style="font-size:11px;letter-spacing:2px">ROOM CODE</div><div class="code">${r.code}</div><button class="btn g" style="height:38px;margin-top:10px;font-size:13px" data-a="cc">${ic('copy',16)}Copy code</button></div><h2>Members <small>${r.members.length}</small></h2><div class="mem">${r.members.map(m=>`<div><div class="av glass" style="${m.me&&D.prof.pic?`background-image:url('${D.prof.pic}')`:''}">${m.me&&D.prof.pic?'':esc(m.n[0].toUpperCase())}</div>${esc(m.me?'You':m.n)}${m.host?'<br><span class="tag">HOST</span>':''}</div>`).join('')}</div><h2>Now playing</h2>${c?`<div class="row now" data-open="1"><div class="art" ${A(c)}></div><div class="m"><b>${esc(c.t)}</b><span>${esc(c.a)}<i class="tag">SYNCED</i></span></div></div>`:`<div class="empty glass" style="border-radius:20px;padding:24px">Play any song, the whole room hears it</div>`}<h2>Chat</h2><div class="chat glass" id="chat">${r.chat.map(chatHtml).join('')}</div><div style="display:flex;gap:8px;margin-top:10px"><input class="field" id="cm" placeholder="Message the room"><button class="btn" style="padding:0 16px" data-a="sd">${ic('send',20)}</button></div>`;const ch=$('#chat');ch.scrollTop=ch.scrollHeight;$('#cm').addEventListener('keydown',e=>{if(e.key==='Enter')sendChat()})}
 const chatHtml=m=>m.sys?`<div class="msg sys">${esc(m.t)}</div>`:`<div class="msg ${m.me?'me':''}">${m.me?'':`<small>${esc(m.n)}</small>`}${esc(m.t)}</div>`;
-function rCert(){
-  const since=new Date(D.since);
-  $('#s-cert').innerHTML=`<h1>Owner Certificate</h1><p class="sub">Verified ownership of this Vaultify build</p>
-  <div class="cert glass" style="margin-top:16px">
-   <svg class="seal" viewBox="0 0 100 100" fill="none" stroke="#fff" stroke-width="1.5"><circle cx="50" cy="50" r="46" opacity=".5"/><circle cx="50" cy="50" r="38"/><path d="M30 38l20 36 20-36" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M38 38h24" stroke-width="3" stroke-linecap="round"/>
-   <g stroke-dasharray="2 6" opacity=".6"><circle cx="50" cy="50" r="43"/></g></svg>
-   <h3>Vaultify</h3><div class="lbl">Certificate of ownership</div>
-   <hr><div class="lbl">Version</div><div class="val">v2.0</div>
-   <div class="lbl">Owner</div><div class="val" style="display:flex;gap:7px;justify-content:center;align-items:center">${ic('ig',18)}@akshat.kumar_148</div>
-   <div class="lbl">Issued on</div><div class="val">${since.toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'})}</div>
-   <div class="val" style="font-weight:500;color:var(--mut);font-size:14px">${since.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true})} IST</div>
-   <hr><div class="lbl">Live date and time</div><div class="clk" id="clk"></div>
-   <div class="lbl">Certificate ID</div><div class="val" style="font-size:13px;letter-spacing:2px">VLT-${(D.since%1e8).toString(36).toUpperCase()}-V2</div>
-  </div>
-  <h2>System status <small id="sysL">Live</small></h2>
-  <div class="box glass">
-   <div class="stat"><span>Thumbnail URLs renew in</span><b id="rn">--:--</b></div>
-   <div class="stat"><span>Full server fetch</span><b>Every 15 min</b></div>
-   <div class="stat"><span>Cache hit rate</span><b id="ch">96%</b></div>
-   <div class="stat"><span>Avg load time</span><b id="lt">0.8s</b></div></div>
-  <h2>Vaultify bots <small>5 of 5 online</small></h2>
-  <div class="box glass">${[1,2,3,4,5].map(i=>`<div class="stat"><span><i class="dot"></i>Bot ${i}</span><b id="bt${i}">0 MP3</b></div>`).join('')}</div>`;
-  clock();sys();
-}
-function rProfile(){
-  const p=D.prof,ids={Liked:D.liked,History:D.hist.map(h=>h.id),Queue:D.q.slice(Math.max(D.qi,0))};
-  let body='';
-  if(U.pt==='Playlists')body=D.pls.map(pl=>`<div class="row glass" style="margin-bottom:8px" data-pl="${pl.id}"><div class="art" ${pl.ids[0]?A(byId(pl.ids[0])):''} style="background-color:#222;${pl.ids[0]?'background-image:'+art(byId(pl.ids[0])):''}"></div><div class="m"><b>${esc(pl.name)}</b><span>${pl.ids.length} songs</span></div><button class="dots" data-plplay="${pl.id}">${ic('play',18)}</button></div>`).join('')||'<div class="empty">No playlists yet</div>';
-  else body=ids[U.pt].length?list(ids[U.pt]):`<div class="empty">Nothing here yet</div>`;
-  
-  $('#s-profile').innerHTML=`<div class="pf"><div class="av glass" style="${p.pic?`background-image:url('${p.pic}')`:''}">${p.pic?'':esc((p.name[0]||'V').toUpperCase())}<label class="cam">${ic('cam',16)}<input type="file" accept="image/*" id="pic" hidden></label></div>
-  <input class="field" id="pn" value="${esc(p.name)}" maxlength="20" style="text-align:center;font-weight:600;font-size:18px">
-  <input class="field" id="pb" value="${esc(p.bio)}" maxlength="60" style="text-align:center;margin-top:8px;font-size:14px;color:var(--mut)"></div>
-  <div class="stats glass"><div><b>${D.liked.length}</b><span>Liked</span></div><div><b>${D.hist.length}</b><span>Played</span></div><div><b>${D.pls.length}</b><span>Playlists</span></div></div>
-  
-  <div class="sw glass"><span>Simple UI (Fast Mode)<br><small style="color:var(--mut)">Turns off glassy effects</small></span><div class="tog ${D.simpleUI?'on':''}" data-simple="1"></div></div>
-  <div class="sw glass" style="margin-top:6px"><span>Show FPS Counter<br><small style="color:var(--mut)">Displays frame rate on screen</small></span><div class="tog ${D.showFps?'on':''}" data-fps="1"></div></div>
+function rCert(){const since=new Date(D.since);$('#s-cert').innerHTML=`<h1>Owner Certificate</h1><p class="sub">Verified ownership of this Vaultify build</p><div class="cert glass" style="margin-top:16px"><svg class="seal" viewBox="0 0 100 100" fill="none" stroke="#fff" stroke-width="1.5"><circle cx="50" cy="50" r="46" opacity=".5"/><circle cx="50" cy="50" r="38"/><path d="M30 38l20 36 20-36" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M38 38h24" stroke-width="3" stroke-linecap="round"/><g stroke-dasharray="2 6" opacity=".6"><circle cx="50" cy="50" r="43"/></g></svg><h3>Vaultify</h3><div class="lbl">Certificate of ownership</div><hr><div class="lbl">Version</div><div class="val">v2.0</div><div class="lbl">Owner</div><div class="val" style="display:flex;gap:7px;justify-content:center;align-items:center">${ic('ig',18)}@akshat.kumar_148</div><div class="lbl">Issued on</div><div class="val">${since.toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'})}</div><div class="val" style="font-weight:500;color:var(--mut);font-size:14px">${since.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true})} IST</div><hr><div class="lbl">Live date and time</div><div class="clk" id="clk"></div><div class="lbl">Certificate ID</div><div class="val" style="font-size:13px;letter-spacing:2px">VLT-${(D.since%1e8).toString(36).toUpperCase()}-V2</div></div><h2>System status <small id="sysL">Live</small></h2><div class="box glass"><div class="stat"><span>Thumbnail URLs renew in</span><b id="rn">--:--</b></div><div class="stat"><span>Full server fetch</span><b>Every 15 min</b></div><div style="margin:10px 0 4px;font-size:13.5px;display:flex;justify-content:space-between"><span>Traffic controller</span><b id="rps">0 req/s</b></div><div class="bar"><i id="rpb" style="width:30%"></i></div><div class="stat" style="margin-top:8px"><span>Request queue / limit</span><b id="rq">0 / 150</b></div><div class="stat"><span>Cache hit rate</span><b id="ch">96%</b></div><div class="stat"><span>Avg load time</span><b id="lt">0.8s</b></div></div><h2>Vaultify bots <small>5 of 5 online</small></h2><div class="box glass">${[1,2,3,4,5].map(i=>`<div class="stat"><span><i class="dot"></i>Bot ${i}</span><b id="bt${i}">0 MP3</b></div>`).join('')}</div>`;clock();sys();}
+function rProfile(){const p=D.prof,ids={Liked:D.liked,History:D.hist.map(h=>h.id),Queue:D.q.slice(Math.max(D.qi,0))};let body='';if(U.pt==='Playlists')body=D.pls.map(pl=>`<div class="row glass" style="margin-bottom:8px" data-pl="${pl.id}"><div class="art" ${pl.ids[0]?A(byId(pl.ids[0])):''} style="background-color:#222;${pl.ids[0]?'background-image:'+art(byId(pl.ids[0])):''}"></div><div class="m"><b>${esc(pl.name)}</b><span>${pl.ids.length} songs</span></div><button class="dots" data-plplay="${pl.id}">${ic('play',18)}</button></div>`).join('')||'<div class="empty">No playlists yet</div>';else body=ids[U.pt].length?list(ids[U.pt]):`<div class="empty">Nothing here yet</div>`;$('#s-profile').innerHTML=`<div class="pf"><div class="av glass" style="${p.pic?`background-image:url('${p.pic}')`:''}">${p.pic?'':esc((p.name[0]||'V').toUpperCase())}<label class="cam">${ic('cam',16)}<input type="file" accept="image/*" id="pic" hidden></label></div><input class="field" id="pn" value="${esc(p.name)}" maxlength="20" style="text-align:center;font-weight:600;font-size:18px"><input class="field" id="pb" value="${esc(p.bio)}" maxlength="60" style="text-align:center;margin-top:8px;font-size:14px;color:var(--mut)"></div><div class="stats glass"><div><b>${D.liked.length}</b><span>Liked</span></div><div><b>${D.hist.length}</b><span>Played</span></div><div><b>${D.pls.length}</b><span>Playlists</span></div></div><div class="sw glass"><span>Simple UI (Fast Mode)<br><small style="color:var(--mut)">Turns off glassy effects</small></span><div class="tog ${D.simpleUI?'on':''}" data-simple="1"></div></div><div class="seg glass">${['Liked','Playlists','History','Queue'].map(t=>`<button class="${U.pt===t?'on':''}" data-pt="${t}">${t}</button>`).join('')}</div>${body}`;$('#pn').onchange=e=>{D.prof.name=e.target.value.trim()||'vault_user';save();rNav();toast('Username saved')};$('#pb').onchange=e=>{D.prof.bio=e.target.value;save();toast('Bio saved')};$('#pic').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=c.height=200;const x=c.getContext('2d'),m=Math.min(im.width,im.height);x.drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,200,200);D.prof.pic=c.toDataURL('image/jpeg',.8);save();rProfile();rNav()};im.src=r.result};r.readAsDataURL(f)};}
 
-  <div class="seg glass">${['Liked','Playlists','History','Queue'].map(t=>`<button class="${U.pt===t?'on':''}" data-pt="${t}">${t}</button>`).join('')}</div>${body}`;
-  $('#pn').onchange=e=>{D.prof.name=e.target.value.trim()||'vault_user';save();rNav();toast('Username saved')};
-  $('#pb').onchange=e=>{D.prof.bio=e.target.value;save();toast('Bio saved')};
-  $('#pic').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=c.height=200;const x=c.getContext('2d'),m=Math.min(im.width,im.height);x.drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,200,200);D.prof.pic=c.toDataURL('image/jpeg',.8);save();rProfile();rNav()};im.src=r.result};r.readAsDataURL(f)};
-}
-
-function rMini(){const s=cur(),m=$('#mini');if(!s){m.classList.remove('show');return}m.classList.add('show');
-  m.innerHTML=`<div class="art" ${A(s)} data-open="1"></div><div class="m" data-open="1"><b>${esc(s.t)}</b><span>${esc(s.a)}</span></div>
-  <button class="ibtn" data-a="tg">${ic(U.playing?'pause':'play',24)}</button><button class="ibtn" data-a="nx">${ic('next',22)}</button><div class="pg"><i></i></div>`}
-function rFull(){const s=cur(),f=$('#full');if(!s)return;f.classList.toggle('paused',!U.playing);
-  const l=D.liked.includes(s.id);
-  f.innerHTML=`<div class="hd"><button class="ibtn glass" data-a="cl">${ic('down',22)}</button><span>${U.fpTab==='now'?'Now playing':'Up next'}</span><button class="ibtn glass" data-menu="${s.id}">${ic('dots',20)}</button></div>
-  ${U.fpTab==='now'?`<div class="big art" ${A(s)}></div>
-  <div class="ti"><div style="min-width:0"><h2>${esc(s.t)}</h2><p>${esc(s.a)} · ${SRC[s.src]}</p></div><button class="ibtn" data-like="${s.id}" style="color:${l?'#ff4f7b':'#fff'}">${ic('heart',26,1.8,l?'currentColor':'none')}</button></div>
-  <input type="range" id="seek" min="0" max="${s.d}" step=".5" value="${U.T}"><div class="times"><span id="tcur">${fmt(U.T)}</span><span id="trem">-${fmt(s.d-U.T)}</span></div>
-  <div class="ctl"><button class="${U.shuf?'on':''}" data-a="sf">${ic('shuf',22)}</button><button data-a="pv">${ic('prev',32)}</button>
-  <button class="play" data-a="tg">${ic(U.playing?'pause':'play',34)}</button><button data-a="nx">${ic('next',32)}</button><button class="${U.rep?'on':''}" data-a="rp">${ic('rep',22)}</button></div>`
-  :`<div class="fpq"><div class="sub" style="margin:14px 4px 6px">Playing from queue</div>${D.q.map((id,i)=>`<div class="row ${i===D.qi?'now':''}" data-qi="${i}"><div class="art" ${A(byId(id))}></div><div class="m"><b>${esc(byId(id).t)}</b><span>${esc(byId(id).a)}</span></div><button class="dots" data-menu="${id}">${ic('dots',20)}</button></div>`).join('')}
-  </div>`}
-  <div class="fpbot"><button class="glass" data-a="ft">${ic(U.fpTab==='now'?'queue':'play',18)}${U.fpTab==='now'?'Queue':'Player'}</button><button class="glass" data-a="pl2">${ic('list',18)}Playlist</button><button class="glass" data-a="sh2">${ic('share',18)}Share</button></div>`;
-  const r=$('#seek');if(r){r.style.setProperty('--p',U.T/s.d*100+'%');
-    r.addEventListener('input',e=>{r.dragging=true;U.T=+e.target.value;r.style.setProperty('--p',U.T/s.d*100+'%');$('#tcur').textContent=fmt(U.T)});
-    r.addEventListener('change',()=>{r.dragging=false})}
-}
+function rMini(){const s=cur(),m=$('#mini');if(!s){m.classList.remove('show');return}m.classList.add('show');m.innerHTML=`<div class="art" ${A(s)} data-open="1"></div><div class="m" data-open="1"><b>${esc(s.t)}</b><span>${esc(s.a)}</span></div><button class="ibtn" data-a="tg">${ic(U.playing?'pause':'play',24)}</button><button class="ibtn" data-a="nx">${ic('next',22)}</button><div class="pg"><i></i></div>`}
+function rFull(){const s=cur(),f=$('#full');if(!s)return;f.classList.toggle('paused',!U.playing);const l=D.liked.includes(s.id);f.innerHTML=`<div class="hd"><button class="ibtn glass" data-a="cl">${ic('down',22)}</button><span>${U.fpTab==='now'?'Now playing':'Up next'}</span><button class="ibtn glass" data-menu="${s.id}">${ic('dots',20)}</button></div>${U.fpTab==='now'?`<div class="big art" ${A(s)}></div><div class="ti"><div style="min-width:0"><h2>${esc(s.t)}</h2><p>${esc(s.a)} · ${SRC[s.src]}</p></div><button class="ibtn" data-like="${s.id}" style="color:${l?'#ff4f7b':'#fff'}">${ic('heart',26,1.8,l?'currentColor':'none')}</button></div><input type="range" id="seek" min="0" max="${s.d}" step=".5" value="${U.T}"><div class="times"><span id="tcur">${fmt(U.T)}</span><span id="trem">-${fmt(s.d-U.T)}</span></div><div class="ctl"><button class="${U.shuf?'on':''}" data-a="sf">${ic('shuf',22)}</button><button data-a="pv">${ic('prev',32)}</button><button class="play" data-a="tg">${ic(U.playing?'pause':'play',34)}</button><button data-a="nx">${ic('next',32)}</button><button class="${U.rep?'on':''}" data-a="rp">${ic('rep',22)}</button></div>`:`<div class="fpq"><div class="sub" style="margin:14px 4px 6px">Playing from queue</div>${D.q.map((id,i)=>`<div class="row ${i===D.qi?'now':''}" data-qi="${i}"><div class="art" ${A(byId(id))}></div><div class="m"><b>${esc(byId(id).t)}</b><span>${esc(byId(id).a)}</span></div><button class="dots" data-menu="${id}">${ic('dots',20)}</button></div>`).join('')}</div>`}<div class="fpbot"><button class="glass" data-a="ft">${ic(U.fpTab==='now'?'queue':'play',18)}${U.fpTab==='now'?'Queue':'Player'}</button><button class="glass" data-a="pl2">${ic('list',18)}Playlist</button><button class="glass" data-a="sh2">${ic('share',18)}Share</button></div>`;const r=$('#seek');if(r){r.style.setProperty('--p',U.T/s.d*100+'%');r.addEventListener('input',e=>{r.dragging=true;U.T=+e.target.value;r.style.setProperty('--p',U.T/s.d*100+'%');$('#tcur').textContent=fmt(U.T)});r.addEventListener('change',()=>{r.dragging=false})}}
 function openFull(){U.full=true;U.fpTab='now';rFull();$('#full').classList.add('open')}
 function closeFull(){U.full=false;$('#full').classList.remove('open')}
 
 const TABS=[['home','Home'],['search','Search'],['team','Team'],['cert','Owner'],['profile','Profile']];
-function rNav(){
-  $('#nav').innerHTML=TABS.map(([k,l])=>{
-    let ico = '';
-    if(k === 'profile'){
-      if(D.prof.pic) {
-        ico = `<div style="width:22px;height:22px;border-radius:50%;background-image:url('${D.prof.pic}');background-size:cover;background-position:center;border:1.5px solid ${U.tab===k?'var(--c2)':'rgba(255,255,255,.4)'};margin:1px;${U.tab===k?'box-shadow:0 0 6px var(--c2)':''}"></div>`;
-      } else {
-        ico = ic('user', 24, U.tab===k?2.1:1.7);
-      }
-    } else {
-      ico = ic(k, 24, U.tab===k?2.1:1.7);
-    }
-    return `<button class="${U.tab===k?'on':''}" data-tab="${k}">${ico}${l}</button>`;
-  }).join('');
-}
+function rNav(){$('#nav').innerHTML=TABS.map(([k,l])=>{let ico='';if(k==='profile'){if(D.prof.pic){ico=`<div style="width:22px;height:22px;border-radius:50%;background-image:url('${D.prof.pic}');background-size:cover;background-position:center;border:1.5px solid ${U.tab===k?'var(--c2)':'rgba(255,255,255,.4)'};margin:1px;${U.tab===k?'box-shadow:0 0 6px var(--c2)':''}"></div>`}else{ico=ic('user',24,U.tab===k?2.1:1.7)}}else{ico=ic(k,24,U.tab===k?2.1:1.7)}return `<button class="${U.tab===k?'on':''}" data-tab="${k}">${ico}${l}</button>`}).join('')}
 const RS={home:rHome,search:rSearch,team:rTeam,cert:rCert,profile:rProfile};
 function go(t){U.tab=t;document.querySelectorAll('.screen').forEach(e=>e.classList.toggle('act',e.id==='s-'+t));RS[t]();rNav()}
-function paint(){
-  const s=cur();$('#notch').classList.toggle('on',!!s&&U.playing);
-  if(s)setTheme(s);
-  const sc=$('#s-'+U.tab).scrollTop;
-  if(!(U.tab==='search'&&document.activeElement&&document.activeElement.id==='q')&&!(U.tab==='team'&&document.activeElement&&document.activeElement.id==='cm'))RS[U.tab]();
-  $('#s-'+U.tab).scrollTop=sc;rMini();if(U.full)rFull();
-}
+function paint(){const s=cur();$('#notch').classList.toggle('on',!!s&&U.playing);if(s)setTheme(s);const sc=$('#s-'+U.tab).scrollTop;if(!(U.tab==='search'&&document.activeElement&&document.activeElement.id==='q')&&!(U.tab==='team'&&document.activeElement&&document.activeElement.id==='cm'))RS[U.tab]();$('#s-'+U.tab).scrollTop=sc;rMini();if(U.full)rFull()}
 
 const bcn='BroadcastChannel' in window?new BroadcastChannel('vaultify-room'):null;
 const bc=m=>{if(bcn&&U.room)bcn.postMessage({...m,code:U.room.code,from:D.prof.name})};
-if(bcn)bcn.onmessage=e=>{const m=e.data,r=U.room;if(!r||m.code!==r.code)return;
-  if(m.type==='chat'){r.chat.push({n:m.from,t:m.t});refreshTeam()}
-  else if(m.type==='join'){if(!r.members.find(x=>x.n===m.from)){r.members.push({n:m.from});r.chat.push({sys:1,t:m.from+' joined the room'});bc({type:'hello',members:r.members.map(x=>x.n)});refreshTeam()}}
-  else if(m.type==='play'){const i=D.q.indexOf(m.id);i>=0?D.qi=i:(D.q.push(m.id),D.qi=D.q.length-1);startCur();toast(m.from+' changed the song')}};
+if(bcn)bcn.onmessage=e=>{const m=e.data,r=U.room;if(!r||m.code!==r.code)return;if(m.type==='chat'){r.chat.push({n:m.from,t:m.t});refreshTeam()}else if(m.type==='join'){if(!r.members.find(x=>x.n===m.from)){r.members.push({n:m.from});r.chat.push({sys:1,t:m.from+' joined the room'});bc({type:'hello',members:r.members.map(x=>x.n)});refreshTeam()}}else if(m.type==='play'){const i=D.q.indexOf(m.id);i>=0?D.qi=i:(D.q.push(m.id),D.qi=D.q.length-1);startCur();toast(m.from+' changed the song')}};
 const refreshTeam=()=>{if(U.tab==='team')rTeam()};
 const mkCode=()=>'VLT-'+Array.from({length:4},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('');
-function enterRoom(code,host){
-  U.room={code,members:[{n:D.prof.name,me:1,host}],chat:[{sys:1,t:host?'Room created. Share the code to invite friends.':'You joined the room'}]};
-  if(!host)U.room.members.unshift({n:'Host',host:1});
-  bc({type:'join'});go('team');
-  const fr=['Riya','Kabir','Ananya'];fr.forEach((n,i)=>setTimeout(()=>{if(!U.room||U.room.code!==code)return;
-    U.room.members.push({n});U.room.chat.push({sys:1,t:n+' joined the room'});refreshTeam()},2500+i*3500));
-  setTimeout(()=>{if(!U.room||U.room.code!==code)return;U.room.chat.push({n:'Riya',t:'This song is fire, play more like it'});refreshTeam()},11000);
-}
-function sendChat(){const i=$('#cm'),t=i.value.trim();if(!t||!U.room)return;
-  U.room.chat.push({me:1,t});bc({type:'chat',t});i.value='';rTeam();$('#cm').focus();
-  if(U.room.members.length>1&&Math.random()<.6)setTimeout(()=>{if(!U.room)return;const o=U.room.members.filter(m=>!m.me);U.room.chat.push({n:o[Math.floor(Math.random()*o.length)].n,t:['Haha true','Add it to the queue','Next one please','Love this vibe'][Math.floor(Math.random()*4)]});refreshTeam()},1500)}
+function enterRoom(code,host){U.room={code,members:[{n:D.prof.name,me:1,host}],chat:[{sys:1,t:host?'Room created. Share the code to invite friends.':'You joined the room'}]};if(!host)U.room.members.unshift({n:'Host',host:1});bc({type:'join'});go('team');const fr=['Riya','Kabir','Ananya'];fr.forEach((n,i)=>setTimeout(()=>{if(!U.room||U.room.code!==code)return;U.room.members.push({n});U.room.chat.push({sys:1,t:n+' joined the room'});refreshTeam()},2500+i*3500));setTimeout(()=>{if(!U.room||U.room.code!==code)return;U.room.chat.push({n:'Riya',t:'This song is fire, play more like it'});refreshTeam()},11000)}
+function sendChat(){const i=$('#cm'),t=i.value.trim();if(!t||!U.room)return;U.room.chat.push({me:1,t});bc({type:'chat',t});i.value='';rTeam();$('#cm').focus();if(U.room.members.length>1&&Math.random()<.6)setTimeout(()=>{if(!U.room)return;const o=U.room.members.filter(m=>!m.me);U.room.chat.push({n:o[Math.floor(Math.random()*o.length)].n,t:['Haha true','Add it to the queue','Next one please','Love this vibe'][Math.floor(Math.random()*4)]});refreshTeam()},1500)}
 
 function clock(){const e=$('#clk');if(e)e.innerHTML=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})+'<br>'+new Date().toLocaleTimeString('en-IN',{hour12:true})}
 let q=0;
-function sys(){if(!$('#rps'))return;
-  const raw=Math.round(60+Math.random()*110),rps=Math.min(raw,150);q=Math.max(0,raw-150)+Math.floor(Math.random()*3);
-  $('#ch').textContent=(94+Math.random()*5).toFixed(1)+'%';$('#lt').textContent=(0.6+Math.random()*0.9).toFixed(1)+'s';
-  for(let i=1;i<=5;i++){const b=$('#bt'+i);if(b)b.textContent=(120+i*37+Math.floor(Date.now()/9000)%40)+' MP3'}}
+function sys(){if(!$('#rps'))return;const left=900-Math.floor(Date.now()/1000)%900;$('#rn').textContent=fmt(left);const raw=Math.round(60+Math.random()*110),rps=Math.min(raw,150);q=Math.max(0,raw-150)+Math.floor(Math.random()*3);$('#rps').textContent=rps+' req/s';$('#rpb').style.width=rps/150*100+'%';$('#rq').textContent=q+' / 150';$('#ch').textContent=(94+Math.random()*5).toFixed(1)+'%';$('#lt').textContent=(0.6+Math.random()*0.9).toFixed(1)+'s';for(let i=1;i<=5;i++){const b=$('#bt'+i);if(b)b.textContent=(120+i*37+Math.floor(Date.now()/9000)%40)+' MP3'}}
 setInterval(()=>{clock();sys()},1000);
 
 document.addEventListener('click',e=>{
   const g=s=>e.target.closest(s);let x;
   if(x=g('[data-simple]')){D.simpleUI=!D.simpleUI;save();document.body.classList.toggle('simple-ui',D.simpleUI);rProfile();return}
-  if(x=g('[data-fps]')){D.showFps=!D.showFps;save();$('#fps').style.display=D.showFps?'block':'none';rProfile();return}
   if(x=g('[data-menu]')){menu(+x.dataset.menu);return}
   if(x=g('[data-a]')){const a=x.dataset.a,id=+x.dataset.id;
     switch(a){
