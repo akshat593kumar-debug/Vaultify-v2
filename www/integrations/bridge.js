@@ -1,19 +1,20 @@
 (function(){
   const API = window.VAULTIFY_CONFIG?.apiBase || '';
+  
   async function api(path, opts = {}) {
     const res = await fetch(API + path, { ...opts, headers: { 'Content-Type': 'application/json' } });
-    if (!res.ok) throw new Error("HTTP Error " + res.status);
+    if (!res.ok) throw new Error("HTTP Status: " + res.status);
     return res.json();
   }
 
   async function loadRealSongs() {
     try {
       if(window.toast) window.toast("Connecting to Vercel...");
-      const res = await api('/songs?limit=100');
+      const res = await api('/songs');
       
-      if (res.error) throw new Error(res.error);
+      if (res.error) throw new Error("Backend Error: " + res.error);
       
-      if (res.songs?.length && window.S) {
+      if (res.songs && res.songs.length > 0) {
         window.S.length = 0;
         res.songs.forEach((s, i) => window.S.push({ 
           id: i+1, t: s.title, a: s.artist, cat: 'Vaultify', src: 'tg', 
@@ -23,11 +24,11 @@
         if (window.go) window.go('home');
         if(window.toast) window.toast("✅ " + res.songs.length + " songs loaded!");
       } else {
-        if(window.toast) window.toast("❌ 0 songs returned from backend");
+        if(window.toast) window.toast("❌ 0 songs. Check backend!");
       }
     } catch (e) {
       console.error(e);
-      if(window.toast) window.toast("❌ Error: " + e.message);
+      if(window.toast) window.toast("❌ " + e.message);
     }
   }
 

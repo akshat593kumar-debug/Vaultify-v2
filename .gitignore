@@ -5,3 +5,5 @@ firebase_b64.txt
 .env
 .env.local
 *.log
+.vercel
+.env*
