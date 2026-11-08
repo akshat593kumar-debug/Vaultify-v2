@@ -10,7 +10,7 @@
 
   async function loadRealSongs() {
     try {
-      if(typeof toast !== 'undefined') toast("Connecting...");
+      if(typeof toast !== 'undefined') toast("Connecting to Vaultify...");
       const res = await api('/songs');
       
       if (res.error) throw new Error("Backend: " + res.error);
@@ -70,7 +70,8 @@
 
     if (!audioEl) {
       audioEl = new Audio(); 
-      // crossOrigin hata diya hai taaki Telegram stream block na ho
+      // crossOrigin hata diya gaya hai taaki instant play ho
+      audioEl.preload = "auto"; 
       audioEl.addEventListener('timeupdate', () => { 
           if (typeof U !== 'undefined') U.T = audioEl.currentTime; 
           if (typeof tick !== 'undefined') tick(); 
@@ -78,6 +79,7 @@
       audioEl.addEventListener('ended', () => { if (typeof next !== 'undefined') next(); });
     }
     
+    // Vercel se direct Telegram URL fetch karo (302 Redirect)
     let srcUrl = null;
     if (s._fileId) srcUrl = API + '/audio?file_id=' + encodeURIComponent(s._fileId);
     else if (s._audioUrl) srcUrl = API + '/audio?url=' + encodeURIComponent(s._audioUrl);
@@ -105,8 +107,7 @@
   };
 
   setTimeout(async () => { await loadRealSongs(); }, 1000);
-  
-  // Playlist view logic...
+
   document.addEventListener('click', function(e) {
       const plRow = e.target.closest('[data-pl]');
       if (plRow && !e.target.closest('[data-plplay]')) {
@@ -129,7 +130,6 @@
       }
   }, true);
 
-  // Back Button
   document.addEventListener('DOMContentLoaded', () => {
       if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
           const { App } = window.Capacitor.Plugins;

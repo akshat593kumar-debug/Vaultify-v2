@@ -28,7 +28,6 @@ router.use((req, res, next) => {
   next(); 
 });
 
-// 1. Get All Songs
 router.get('/songs', async (req, res) => {
   try {
     let allSongs = [];
@@ -63,7 +62,7 @@ router.get('/songs', async (req, res) => {
   }
 });
 
-// 2. Audio Stream (Redirect to direct URL to bypass Vercel timeout)
+// DIRECT 302 REDIRECT (Bypasses Vercel and gives direct Telegram URL)
 router.get('/audio', async (req, res) => {
   const fileId = req.query.file_id;
   const audioUrl = req.query.url;
@@ -71,17 +70,17 @@ router.get('/audio', async (req, res) => {
   if (audioUrl) return res.redirect(audioUrl);
   if (!fileId) return res.status(400).send('file_id missing');
 
+  // Rotate bots to avoid rate limits (5 bots = 5x faster)
   const token = BOTS[rrIndex++ % BOTS.length];
   try {
     const { data } = await axios.get(`https://api.telegram.org/bot${token}/getFile`, { params: { file_id: fileId } });
     if (!data.ok) throw new Error(data.description);
     
-    // Direct Telegram URL return kar rahe hain
+    // Redirect to Telegram Server directly
     res.redirect(`https://api.telegram.org/file/bot${token}/${data.result.file_path}`);
   } catch (e) { res.status(500).send(e.message); }
 });
 
-// 3. Thumbnail
 router.get('/thumb', async (req, res) => {
   const fileId = req.query.file_id;
   if (!fileId) return res.status(400).send('No file_id');
