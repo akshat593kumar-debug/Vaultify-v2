@@ -28,7 +28,7 @@ router.use((req, res, next) => {
   next(); 
 });
 
-// 1. Get All Songs (No limit, fast fetching)
+// 1. Get All Songs
 router.get('/songs', async (req, res) => {
   try {
     let allSongs = [];
@@ -63,33 +63,25 @@ router.get('/songs', async (req, res) => {
   }
 });
 
-// 2. Audio Stream (Handles both TG file_id and JioSaavn url)
+// 2. Audio Stream (Redirect to direct URL to bypass Vercel timeout)
 router.get('/audio', async (req, res) => {
   const fileId = req.query.file_id;
   const audioUrl = req.query.url;
 
-  if (audioUrl) {
-    try {
-      const stream = await axios.get(audioUrl, { responseType: 'stream' });
-      res.setHeader('Content-Type', 'audio/mpeg');
-      res.setHeader('Access-Control-Allow-Origin', '*');
-      return stream.data.pipe(res);
-    } catch (e) { return res.status(500).send(e.message); }
-  }
-
+  if (audioUrl) return res.redirect(audioUrl);
   if (!fileId) return res.status(400).send('file_id missing');
+
   const token = BOTS[rrIndex++ % BOTS.length];
   try {
     const { data } = await axios.get(`https://api.telegram.org/bot${token}/getFile`, { params: { file_id: fileId } });
     if (!data.ok) throw new Error(data.description);
-    const stream = await axios.get(`https://api.telegram.org/file/bot${token}/${data.result.file_path}`, { responseType: 'stream' });
-    res.setHeader('Content-Type', 'audio/mpeg');
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    stream.data.pipe(res);
+    
+    // Direct Telegram URL return kar rahe hain
+    res.redirect(`https://api.telegram.org/file/bot${token}/${data.result.file_path}`);
   } catch (e) { res.status(500).send(e.message); }
 });
 
-// 3. Thumbnail Proxy (Direct Telegram image link)
+// 3. Thumbnail
 router.get('/thumb', async (req, res) => {
   const fileId = req.query.file_id;
   if (!fileId) return res.status(400).send('No file_id');
@@ -97,36 +89,9 @@ router.get('/thumb', async (req, res) => {
   try {
     const { data } = await axios.get(`https://api.telegram.org/bot${token}/getFile`, { params: { file_id: fileId } });
     if (!data.ok) throw new Error(data.description);
-    const url = `https://api.telegram.org/file/bot${token}/${data.result.file_path}`;
-    res.redirect(url); // Fast redirect to actual image
+    res.redirect(`https://api.telegram.org/file/bot${token}/${data.result.file_path}`);
   } catch (e) { res.status(500).send(e.message); }
 });
-
-// 4. JioSaavn Search
-router.get('/jio-search', async (req, res) => {
-  try {
-    const { data } = await axios.get(`https://saavn.dev/api/search/songs`, { params: { query: req.query.q, limit: 20 } });
-    const songs = (data?.data?.results || []).map(s => ({
-      id: 'jio_' + s.id, title: s.name, artist: s.artists?.primary?.[0]?.name || 'Unknown',
-      duration: s.duration, audio_url: s.downloadUrl?.find(d => d.quality === '320kbps')?.link || s.downloadUrl?.[0]?.link,
-      thumb_url: s.image?.[2]?.link || s.image?.[0]?.link
-    })).filter(s => s.audio_url);
-    res.json({ songs });
-  } catch (e) { res.json({ songs: [] }); }
-});
-
-// 5. Telegram Search (Local)
-router.get('/search', async (req, res) => {
-  try {
-    const q = (req.query.q || '').toLowerCase();
-    if (!q) return res.json({ songs: [] });
-    // Just reusing the full list for now, frontend filters it
-    res.json({ songs: [] }); 
-  } catch (e) { res.json({ songs: [] }); }
-});
-
-router.get('/trending', async (req, res) => { res.json({ songs: [] }); });
-router.post('/tg-webhook', async (req, res) => { res.json({ ok: true }); });
 
 app.use('/api', router);
 app.use('/', router);

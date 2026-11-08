@@ -10,7 +10,7 @@
 
   async function loadRealSongs() {
     try {
-      if(typeof toast !== 'undefined') toast("Connecting to Vercel...");
+      if(typeof toast !== 'undefined') toast("Connecting...");
       const res = await api('/songs');
       
       if (res.error) throw new Error("Backend: " + res.error);
@@ -25,7 +25,6 @@
                   _fileId: s.file_id, _audioUrl: s.audio_url, _backendId: s.id 
                 });
                 
-                // Load Thumbnail
                 if (s.thumb_url) {
                     if (typeof artCache !== 'undefined') artCache[i+1] = `url('${s.thumb_url}')`;
                 } else if (s.thumb_file_id) {
@@ -37,7 +36,7 @@
             if(typeof toast !== 'undefined') toast("✅ " + res.songs.length + " songs loaded!");
         }
       } else {
-        if(typeof toast !== 'undefined') toast("❌ 0 songs. Check backend!");
+        if(typeof toast !== 'undefined') toast("❌ 0 songs found");
       }
     } catch (e) {
       console.error(e);
@@ -45,24 +44,7 @@
     }
   }
 
-  let audioEl = null, audioCtx = null, sourceNode = null, filters = [];
-  const freqs = [60, 230, 910, 3600, 14000];
-  
-  function setupAudioGraph() {
-    if (audioCtx) return;
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    audioCtx = new AudioContext();
-    sourceNode = audioCtx.createMediaElementSource(audioEl);
-    let lastNode = sourceNode;
-    freqs.forEach((f, i) => {
-      const filter = audioCtx.createBiquadFilter();
-      filter.type = 'peaking'; filter.frequency.value = f; filter.Q.value = 1;
-      const saved = localStorage.getItem('vaultify_eq_'+i);
-      filter.gain.value = saved ? parseFloat(saved) : 0;
-      lastNode.connect(filter); lastNode = filter; filters.push(filter);
-    });
-    lastNode.connect(audioCtx.destination);
-  }
+  let audioEl = null;
 
   function updateMediaSession(s) {
       if (!s || !('mediaSession' in navigator)) return;
@@ -88,13 +70,12 @@
 
     if (!audioEl) {
       audioEl = new Audio(); 
-      audioEl.crossOrigin = "anonymous"; // EQ ke liye zaroori hai
+      // crossOrigin hata diya hai taaki Telegram stream block na ho
       audioEl.addEventListener('timeupdate', () => { 
           if (typeof U !== 'undefined') U.T = audioEl.currentTime; 
           if (typeof tick !== 'undefined') tick(); 
       });
       audioEl.addEventListener('ended', () => { if (typeof next !== 'undefined') next(); });
-      setupAudioGraph();
     }
     
     let srcUrl = null;
@@ -104,7 +85,6 @@
     if (srcUrl) { 
       audioEl.src = srcUrl; 
       if (typeof U !== 'undefined' && U.playing) { 
-          if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); 
           audioEl.play().catch((err)=> { console.log("Play error:", err); }); 
       }
     }
@@ -115,7 +95,6 @@
     if (_toggle) _toggle();
     if (audioEl && typeof U !== 'undefined') { 
         if (U.playing) { 
-            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); 
             audioEl.play().catch(()=>{}); 
             if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "playing";
         } else { 
@@ -126,8 +105,8 @@
   };
 
   setTimeout(async () => { await loadRealSongs(); }, 1000);
-
-  // --- Baki saara UI logic (Playlist, EQ, Back button) same rahega ---
+  
+  // Playlist view logic...
   document.addEventListener('click', function(e) {
       const plRow = e.target.closest('[data-pl]');
       if (plRow && !e.target.closest('[data-plplay]')) {
@@ -150,39 +129,7 @@
       }
   }, true);
 
-  function openEQSheet() {
-      if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-      let html = `<h2 style="margin:4px 0 8px">Equalizer</h2><div style="display:flex;justify-content:space-between;align-items:flex-end;height:180px;padding:20px 10px;background:var(--glass);border-radius:20px;margin-bottom:15px;">`;
-      freqs.forEach((freq, i) => { let val = filters[i] ? filters[i].gain.value : 0; let label = freq >= 1000 ? (freq/1000) + 'k' : freq; html += `<div style="display:flex;flex-direction:column;align-items:center;gap:10px;"><input type="range" class="eq-slider" data-index="${i}" min="-12" max="12" step="1" value="${val}" style="writing-mode: vertical-lr; direction: rtl; -webkit-appearance: slider-vertical; width: 20px; height: 120px; accent-color: var(--c2);"><span style="font-size:11px;color:var(--mut);font-weight:600">${label}</span></div>`; });
-      html += `</div><div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;"><button class="chip on" onclick="applyEQPreset('flat')">Flat</button><button class="chip" onclick="applyEQPreset('bass')">Bass Boost</button><button class="chip" onclick="applyEQPreset('vocal')">Vocal</button><button class="chip" onclick="applyEQPreset('rock')">Rock</button></div>`;
-      if(typeof sheet !== 'undefined') sheet(html);
-      setTimeout(() => { document.querySelectorAll('.eq-slider').forEach(slider => { slider.addEventListener('input', e => { let idx = parseInt(e.target.dataset.index); let val = parseFloat(e.target.value); if(filters[idx]) filters[idx].gain.value = val; localStorage.setItem('vaultify_eq_'+idx, val); }); }); }, 100);
-  }
-
-  window.applyEQPreset = function(preset) {
-      const presets = { flat: [0, 0, 0, 0, 0], bass: [8, 5, 0, -1, -2], vocal: [-2, 2, 6, 4, 1], rock: [5, 2, -1, 3, 5] };
-      if(!filters.length) return; filters.forEach((f, i) => { f.gain.value = presets[preset][i]; localStorage.setItem('vaultify_eq_'+i, presets[preset][i]); });
-      document.querySelectorAll('.eq-slider').forEach(s => { s.value = presets[preset][s.dataset.index]; });
-      document.querySelectorAll('#sheet .chip').forEach(c => c.classList.remove('on')); if(event && event.target) event.target.classList.add('on');
-  };
-
-  const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-          if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-              const full = document.getElementById('full');
-              if (full && full.classList.contains('open')) {
-                  const fpbot = full.querySelector('.fpbot');
-                  if (fpbot && !document.getElementById('eq-btn')) {
-                      const btn = document.createElement('button'); btn.id = 'eq-btn'; btn.className = 'glass';
-                      btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21v-7m0-4V3m8 18v-9m0-4V3m8 18v-5m0-4V3M1 14h6m2-6h6m2 8h6"/></svg> EQ`;
-                      btn.onclick = openEQSheet; fpbot.appendChild(btn);
-                  }
-              }
-          }
-      });
-  });
-  observer.observe(document.getElementById('full'), { attributes: true });
-
+  // Back Button
   document.addEventListener('DOMContentLoaded', () => {
       if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
           const { App } = window.Capacitor.Plugins;
