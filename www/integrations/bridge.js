@@ -165,3 +165,44 @@
       }
   });
 })();
+
+// --- NATIVE NOTIFICATION PLAYER ---
+const _updateMediaSession_orig = window.updateMediaSession;
+window.updateMediaSession = function(s) {
+    if (_updateMediaSession_orig) _updateMediaSession_orig(s);
+    if (!s || !('mediaSession' in navigator)) return;
+    
+    try {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: s.t,
+            artist: s.a,
+            album: 'Vaultify',
+            artwork: [
+                { src: 'https://vaultify-v2-gamma.vercel.app/icon.png', sizes: '512x512', type: 'image/png' }
+            ]
+        });
+        
+        navigator.mediaSession.setActionHandler('play', () => {
+            if(window.U) window.U.playing = true;
+            if(typeof window.toggle === 'function') window.toggle();
+        });
+        navigator.mediaSession.setActionHandler('pause', () => {
+            if(window.U) window.U.playing = false;
+            if(typeof window.toggle === 'function') window.toggle();
+        });
+        navigator.mediaSession.setActionHandler('nexttrack', () => {
+            if(typeof window.next === 'function') window.next();
+        });
+        navigator.mediaSession.setActionHandler('previoustrack', () => {
+            if(typeof window.prev === 'function') window.prev();
+        });
+    } catch(e) {}
+};
+
+// Jab bhi gaana change ho, notification update ho
+const _startCur_media = window.startCur;
+window.startCur = function() {
+    if (_startCur_media) _startCur_media();
+    const s = typeof cur !== 'undefined' ? cur() : null;
+    if (s) window.updateMediaSession(s);
+};
