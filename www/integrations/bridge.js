@@ -1,6 +1,6 @@
 (function(){
   const API = window.VAULTIFY_CONFIG?.apiBase || '';
-  const ICON_URL = "https://vaultify-v2-gamma.vercel.app/vaultify.png"; // App Icon for Notification
+  const ICON_URL = "https://vaultify-v2-gamma.vercel.app/vaultify.png";
 
   async function api(path, opts = {}) {
     const res = await fetch(API + path, { ...opts, headers: { 'Content-Type': 'application/json' } });
@@ -18,11 +18,19 @@
       if (res.songs && res.songs.length > 0) {
         if (typeof S !== 'undefined') {
             S.length = 0; 
-            res.songs.forEach((s, i) => S.push({ 
-              id: i+1, t: s.title, a: s.artist, cat: 'Vaultify', src: 'tg', 
-              c: ['#7c5cff','#00d4ff'], d: s.duration || 180, bpm: 100, 
-              _fileId: s.file_id, _backendId: s.id 
-            }));
+            res.songs.forEach((s, i) => {
+                S.push({ 
+                  id: i+1, t: s.title, a: s.artist, cat: 'Vaultify', src: 'tg', 
+                  c: ['#7c5cff','#00d4ff'], d: s.duration || 180, bpm: 100, 
+                  _fileId: s.file_id, _backendId: s.id 
+                });
+                
+                // Image load karo agar backend se aa gayi hai
+                if (s.thumb_url && typeof artCache !== 'undefined') {
+                    artCache[i+1] = `url('${s.thumb_url}')`;
+                }
+            });
+            
             if (typeof go !== 'undefined') go('home');
             if(typeof toast !== 'undefined') toast("✅ " + res.songs.length + " songs loaded!");
         }
@@ -66,21 +74,18 @@
     lastNode.connect(audioCtx.destination);
   }
 
-  // --- NOTIFICATION PLAYER (Lock Screen Controls) ---
   function updateMediaSession(s) {
       if (!s || !('mediaSession' in navigator)) return;
       try {
           navigator.mediaSession.metadata = new MediaMetadata({
-              title: s.t,
-              artist: s.a,
-              album: 'Vaultify',
+              title: s.t, artist: s.a, album: 'Vaultify',
               artwork: [{ src: ICON_URL, sizes: '512x512', type: 'image/png' }]
           });
           navigator.mediaSession.setActionHandler('play', () => { if(typeof toggle !== 'undefined') toggle(); });
           navigator.mediaSession.setActionHandler('pause', () => { if(typeof toggle !== 'undefined') toggle(); });
           navigator.mediaSession.setActionHandler('nexttrack', () => { if(typeof next !== 'undefined') next(); });
           navigator.mediaSession.setActionHandler('previoustrack', () => { if(typeof prev !== 'undefined') prev(); });
-      } catch(e) { console.log("MediaSession error:", e); }
+      } catch(e) {}
   }
 
   const _startCur = window.startCur;
@@ -89,10 +94,11 @@
     const s = typeof cur !== 'undefined' ? cur() : null;
     if (!s) return;
     
-    updateMediaSession(s); // Update notification when song changes
+    updateMediaSession(s);
 
     if (!audioEl) {
-      audioEl = new Audio(); audioEl.crossOrigin = "anonymous";
+      audioEl = new Audio(); 
+      // CORS hata diya taaki audio block na ho
       audioEl.addEventListener('timeupdate', () => { 
           if (typeof U !== 'undefined') U.T = audioEl.currentTime; 
           if (typeof tick !== 'undefined') tick(); 
@@ -100,12 +106,12 @@
       audioEl.addEventListener('ended', () => { if (typeof next !== 'undefined') next(); });
       setupAudioGraph();
     }
+    
     if (s._fileId) { 
       audioEl.src = API + '/audio?file_id=' + encodeURIComponent(s._fileId); 
       if (typeof U !== 'undefined' && U.playing) { 
-          audioCtx.resume(); 
-          audioEl.play().catch(()=>{}); 
-          updateMediaSession(s); 
+          if (audioCtx) audioCtx.resume(); 
+          audioEl.play().catch((err)=> { console.log("Play error:", err); }); 
       }
     }
   };
@@ -115,7 +121,7 @@
     if (_toggle) _toggle();
     if (audioEl && typeof U !== 'undefined') { 
         if (U.playing) { 
-            audioCtx.resume(); 
+            if (audioCtx) audioCtx.resume(); 
             audioEl.play().catch(()=>{}); 
             if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "playing";
         } else { 
@@ -141,6 +147,7 @@
 
   setTimeout(async () => { await loadRealSongs(); await loadTrending(); }, 1000);
 
+  // ... (Baki Playlist, EQ aur Back button ka code same rahega)
   document.addEventListener('click', function(e) {
       const plRow = e.target.closest('[data-pl]');
       if (plRow && !e.target.closest('[data-plplay]')) {
