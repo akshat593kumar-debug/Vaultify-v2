@@ -12,7 +12,6 @@ jobs:
       - uses: actions/setup-java@v4
         with: { distribution: 'temurin', java-version: '21' }
       
-      # Gradle Cache (Fixes timeout)
       - name: Cache Gradle packages
         uses: actions/cache@v4
         with:
@@ -31,6 +30,24 @@ jobs:
       - name: Generate Keystore
         run: |
           keytool -genkey -v -keystore android/app/vaultify-release.keystore -alias vaultify -keyalg RSA -keysize 2048 -validity 10000 -storepass vaultify123 -keypass vaultify123 -dname "CN=Vaultify, OU=App, O=Vaultify, L=Delhi, S=Delhi, C=IN"
+
+      - name: Pre-Download Gradle (with retries)
+        run: |
+          cd android
+          # Use -bin version (smaller file, faster)
+          sed -i 's/gradle-.*-all.zip/gradle-8.14.3-bin.zip/' gradle/wrapper/gradle-wrapper.properties
+          sed -i '/networkTimeout/d' gradle/wrapper/gradle-wrapper.properties
+          
+          # Try downloading Gradle with multiple retries
+          for i in 1 2 3 4 5 6; do
+            echo "=== Attempt $i to download Gradle ==="
+            if ./gradlew --version > /dev/null 2>&1; then
+              echo "✅ Gradle downloaded successfully"
+              break
+            fi
+            echo "❌ Attempt $i failed, waiting 30s before retry..."
+            sleep 30
+          done
 
       - name: Build APK
         run: |
