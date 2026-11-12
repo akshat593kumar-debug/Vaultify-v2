@@ -12,12 +12,12 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // 1. Background Audio Allow karo
+        // 1. Allow Background Audio
         WebView webView = getBridge().getWebView();
         WebSettings webSettings = webView.getSettings();
         webSettings.setMediaPlaybackRequiresUserGesture(false);
 
-        // 2. Unlimited Refresh Rate (Max FPS) force karo
+        // 2. Force Max Refresh Rate (High FPS)
         try {
             WindowManager.LayoutParams params = getWindow().getAttributes();
             Display display = getWindowManager().getDefaultDisplay();
